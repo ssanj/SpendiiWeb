@@ -9,13 +9,26 @@ import xml.NodeSeq
 import java.util.Calendar
 import net.liftweb.http.SHtml
 import net.liftweb.util.Helpers._
+import bootstrap.liftweb.MongoBoot
 
 class Save extends Loggable {
+
+  private var cost:String = ""
+  private var label:String = ""
+  private var description:String = ""
 
   def spend(xhtml:NodeSeq): NodeSeq = {
     bind("spendii", xhtml,
       "current_date" -> currentDate,
-      "save_spend" -> SHtml.submit("save", () => {logger.info("saved!")}))
+      "label" -> SHtml.text(label, label = _, ("id", "label")),
+      "cost" -> SHtml.text(cost, cost = _, ("id", "cost")),
+      "description" -> SHtml.textarea(description, description = _, ("rows", "3"), ("cols", "50")),
+      "save_spend" -> SHtml.submit("save", () => {doStuff}))
+  }
+
+  private def doStuff {
+    logger.info("label -> " + label + ", cost -> " + cost + ", description -> " + description)
+    MongoBoot.db
   }
 
   private def currentDate: String = {

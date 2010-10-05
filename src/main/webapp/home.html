@@ -3,18 +3,21 @@
        <p>Expenditure for <spendii:current_date /></p>
        <div>
            <label for="label">Label:</label>
-           <input name="label" id="label" type="text" />
+           <spendii:label />
        </div>
         <div>
-            <label for="cost">Cost:</label>
-            <input name="cost" id="cost" type="text" />
+           <label for="cost">Cost:</label>
+           <spendii:cost />
         </div>
         <div>
             <label for="description">Description:</label>
-            <input name="description" id="description" type="text" />
+            <spendii:description />
+            <!--<textarea name="description" id="description" rows="3" cols="50"></textarea>-->
         </div>
         <div>
             <spendii:save_spend />
         </div>
+
+
    </lift:Save.spend>
 </lift:surround>
