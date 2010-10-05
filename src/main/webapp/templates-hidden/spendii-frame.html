@@ -1,0 +1,21 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:lift='http://liftweb.net'>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+        <meta name="description" content="" />
+        <meta name="keywords" content="" />
+        <title>Spendii</title>
+        <script type="text/javascript" charset="UTF-8" src="scripts/jquery-1.4.2.min.js"></script>
+        <script type="text/javascript" charset="UTF-8" src="scripts/spendii.js"></script>
+        <link rel="stylesheet" href="css/my.css"  type="text/css" media="screen" charset="UTF-8" />
+    </head>
+    <body>
+        <div>
+            <p id="enabled">You should enable Javascript</p>
+        </div>
+        <lift:msgs showAll="true"/>
+        <lift:bind name="content" />
+        <div id="menu">
+            <lift:Menu.builder />
+        </div>
+    </body>
+</html>
