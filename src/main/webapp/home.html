@@ -1,3 +1,20 @@
 <lift:surround with="spendii-frame" at="content">
-    <p>Home Content</p>
+   <lift:Save.spend form="post">
+       <p>Expenditure for <spendii:current_date /></p>
+       <div>
+           <label for="label">Label:</label>
+           <input name="label" id="label" type="text" />
+       </div>
+        <div>
+            <label for="cost">Cost:</label>
+            <input name="cost" id="cost" type="text" />
+        </div>
+        <div>
+            <label for="description">Description:</label>
+            <input name="description" id="description" type="text" />
+        </div>
+        <div>
+            <spendii:save_spend />
+        </div>
+   </lift:Save.spend>
 </lift:surround>
