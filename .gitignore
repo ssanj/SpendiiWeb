@@ -1,0 +1,8 @@
+lib_managed/
+project/boot/
+project/build/target/
+project/sbt_project_definition.iml
+spendii.iml
+spendii.ipr
+spendii.iws
+target/
