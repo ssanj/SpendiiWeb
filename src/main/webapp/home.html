@@ -1,4 +1,6 @@
 <lift:surround with="spendii-frame" at="content">
+   <lift:Load.spends /> 
+
    <lift:Save.spend form="post">
        <p>Expenditure for <spendii:current_date /></p>
        <div>
@@ -12,12 +14,9 @@
         <div>
             <label for="description">Description:</label>
             <spendii:description />
-            <!--<textarea name="description" id="description" rows="3" cols="50"></textarea>-->
         </div>
         <div>
             <spendii:save_spend />
         </div>
-
-
    </lift:Save.spend>
 </lift:surround>

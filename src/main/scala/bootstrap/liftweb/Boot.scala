@@ -14,14 +14,10 @@ class Boot extends Loggable {
   def boot {
     LiftRules.addToPackages("spendii")
     LiftRules.setSiteMap(SiteMap(Menu("Home") / "home"))
-
   }
 }
 
 object MongoBoot extends Loggable {
     lazy val mongo = new Mongo
-    lazy val db = {
-      mongo.getDB("spendii")
-      logger.info("connected to spendii db.")
-    }
+    lazy val db = mongo.getDB("spendii")
 }
