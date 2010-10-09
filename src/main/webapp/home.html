@@ -1,6 +1,4 @@
 <lift:surround with="spendii-frame" at="content">
-   <lift:Load.spends /> 
-
    <lift:Save.spend form="post">
        <p>Expenditure for <spendii:current_date /></p>
        <div>
@@ -19,4 +17,6 @@
             <spendii:save_spend />
         </div>
    </lift:Save.spend>
+
+   <lift:Load.spends />
 </lift:surround>

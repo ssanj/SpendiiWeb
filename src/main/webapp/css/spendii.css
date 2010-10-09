@@ -1,3 +1,7 @@
+DIV {
+    display:block;
+}
+
 form div {
 margin: 0 0 10px 160px;
 }
@@ -7,4 +11,40 @@ form div label {
 	float: left;
 	text-align: right;
 	margin: 5px 20px 0 -160px;
+}
+
+H1 {
+    font-style: normal;
+    font-size: large;
+}
+
+H2 {
+    font-style: italic;
+    font-size: medium;
+}
+
+TABLE {
+    margin: 5px;
+    display: block;
+    border:1px solid black;
+    width: 50%;
+    height:auto;
+}
+
+TR {
+    display: block;
+    padding-bottom: 2px;
+}
+
+TH {
+    text-align: center;
+    padding: 10px;
+    border: 2px;
+    border-spacing: 1px;
+}
+
+TD{
+    padding: 10px;
+    border: 2px;
+    border-spacing: 1px;
 }

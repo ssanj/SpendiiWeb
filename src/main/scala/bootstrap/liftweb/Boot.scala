@@ -12,6 +12,7 @@ import com.mongodb.Mongo
 class Boot extends Loggable {
 
   def boot {
+    LiftRules.early.append{ _.setCharacterEncoding("UTF-8")}
     LiftRules.addToPackages("spendii")
     LiftRules.setSiteMap(SiteMap(Menu("Home") / "home"))
   }
