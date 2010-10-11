@@ -5,13 +5,11 @@
 package spendii.snippet
 
 import net.liftweb.common.Loggable
-import xml.{NodeSeq, Text}
 import scala.collection.JavaConversions._
-import net.liftweb.util.Helpers._
+import xml.{NodeSeq}
 import bootstrap.liftweb.MongoBoot
 import spendii.model.Common._
-import net.liftweb.http.SHtml
-import com.mongodb.{DBObject, DBCursor, BasicDBList, BasicDBObject}
+import com.mongodb.{DBCursor, BasicDBObject}
 
 class Load extends Loggable {
 
@@ -19,28 +17,50 @@ class Load extends Loggable {
     val dailySpends = MongoBoot.db.getCollection("sanj.spends")
     val allSpends = dailySpends.find.asInstanceOf[DBCursor]
     if (allSpends != null) {
-        <DIV>
-              <TABLE>
-                <TR>
-                  <TH>Date</TH>
-                  <TH>Label</TH>
-                  <TH>Cost</TH>
-                  <TH>Description</TH>
-                </TR>
+        <div>
+              <table>
+                <tr>
+                  <th>Date</th>
+                  <th>Label</th>
+                  <th>Cost</th>
+                  <th>Description</th>
+                </tr>
               {
                 for(ds <- allSpends.iterator;
                 val spendtry = ds.get("spends").asInstanceOf[BasicDBObject]) yield
-                 <TR>
-                    <TD>{formattedDate(ds.get("date").toString.toLong)}</TD>
-                    <TD>{spendtry.getString("tag")}</TD>
-                    <TD>{spendtry.getDouble("cost")}</TD>
-                    <TD>{spendtry.getString("description")}</TD>
-                  </TR>
+                 <tr>
+                    <td>{formattedDate(ds.get("date").toString.toLong)}</td>
+                    <td>{spendtry.getString("tag")}</td>
+                    <td>{spendtry.getDouble("cost")}</td>
+                    <td>{spendtry.getString("description")}</td>
+                  </tr>
               }
-            </TABLE>
-        </DIV>
+            </table>
+        </div>
     } else {
-      <h3>No Spends</h3>
+      <div>
+        <h3 class="nospends">No Spends</h3>
+      </div>
     }
+  }
+
+  def test(xhtml:NodeSeq): NodeSeq = {
+    <table>
+      <tr>
+        <th>Label</th>
+        <th>Cost</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td>lunch</td>
+        <td>$35.45</td>
+        <td>Burger shots at the Purple Gorilla</td>
+      </tr>
+      <tr>
+        <td>misc</td>
+        <td>$7.20</td>
+        <td>Coffee and Hot Chocolate at Chiasso Cafe at QUT</td>
+      </tr>
+    </table>
   }
 }

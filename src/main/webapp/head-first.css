@@ -2,12 +2,12 @@ body {
  font-family: sans-serif;
 }
 
-p {
-  color: maroon;
-}
+p { 
+  color: maroon; 
+}    
 
 h1, h2 {
-  color: gray;
+  color: gray;        
 }
 
 h1 {
@@ -27,20 +27,9 @@ table {
 
 td, th {
   border: 1px solid black;
-  padding: 5px;
+  padding: 5x;
 }
 
 th {
   background-color: #cc6600;
-}
-
-form div {
-    margin: 0 0 10px 160px;
-}
-
-form div label {
-    width: 140px;
-    float: left;
-    text-align: right;
-    margin: 5px 20px 0 -160px;
 }
