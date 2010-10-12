@@ -14,13 +14,17 @@ class Boot extends Loggable {
   def boot {
     LiftRules.early.append{ _.setCharacterEncoding("UTF-8")}
     LiftRules.addToPackages("spendii")
-    LiftRules.setSiteMap(SiteMap(Menu("Home") / "home", Menu("Test") / "test" ))
+    LiftRules.setSiteMap(SiteMap(
+      Menu("Home") / "home",
+      Menu("Test") / "test",
+      Menu("Delete") / "delete"))
   }
 }
 
 object MongoBoot extends Loggable {
     lazy val mongo = new Mongo
     lazy val db = mongo.getDB("spendii")
+    def deleteCollection(name:String) { getCollection(name).drop }
 
-    def getCollection(name:String): DBCollection = db getCollection name 
+    def getCollection(name:String): DBCollection = db getCollection name
 }
