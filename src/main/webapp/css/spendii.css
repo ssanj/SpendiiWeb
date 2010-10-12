@@ -44,3 +44,12 @@ form div label {
     text-align: right;
     margin: 5px 20px 0 -160px;
 }
+
+.errorText {
+    color: white;
+    background-color: blue;
+}
+
+.noticeText {
+    color: green;
+}

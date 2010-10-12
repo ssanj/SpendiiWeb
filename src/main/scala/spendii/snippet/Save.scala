@@ -12,12 +12,12 @@ import net.liftweb.util.Helpers._
 import bootstrap.liftweb.MongoBoot
 import com.mongodb.BasicDBObject
 import java.util.{ArrayList, Calendar => Cal}
-import net.liftweb.http.{S, SHtml}
+import net.liftweb.http.{RequestVar, S, SHtml}
 
 class Save extends Loggable {
 
-  private var cost:String = ""
   private var label:String = ""
+  private var cost:String = ""
   private var description:String = ""
 
   def spend(xhtml:NodeSeq): NodeSeq = {
@@ -33,6 +33,7 @@ class Save extends Loggable {
     logger.info("label -> " + label + ", cost -> " + cost + ", description -> " + description)
     if (parametersAreValid) {
       MongoBoot.getCollection("sanj.spends").insert(createSpends)
+      S.notice("notices.id","Saved Spend")
     } else {
       S.error("There are form errors")
     }
@@ -56,11 +57,11 @@ class Save extends Loggable {
     }
 
     if (!validCost) {
-      S.error("Please enter a numeric cost.")
+      S.error("cost.error", "Please enter a numeric cost.")
     }
 
     if (!validDescription) {
-      S.error("Please enter a description.")
+      S.error("description.error", "Please enter a description.")
     }
 
     validLabel && validCost && validDescription

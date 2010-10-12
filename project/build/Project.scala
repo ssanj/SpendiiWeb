@@ -6,11 +6,11 @@ class Project(info: ProjectInfo) extends DefaultWebProject(info) {
   lazy val liftVersion = "2.1-RC2"
 
   lazy val mongoDriver = "org.mongodb" % "mongo-java-driver" % "2.1" withSources()
-  
+
   override def libraryDependencies = Set(
-    "net.liftweb" %% "lift-webkit" % liftVersion % "compile->default",
-    "net.liftweb" %% "lift-common" % liftVersion % "compile->default",
-    "net.liftweb" %% "lift-mapper" % liftVersion % "compile->default",
+    "net.liftweb" %% "lift-webkit" % liftVersion % "compile->default" withSources(),
+    "net.liftweb" %% "lift-common" % liftVersion % "compile->default" withSources(),
+    "net.liftweb" %% "lift-mapper" % liftVersion % "compile->default" withSources(),
     "org.mortbay.jetty" % "jetty" % "6.1.22" % "test->default"
     ) ++ super.libraryDependencies
 }

@@ -1,22 +1,24 @@
 <lift:surround with="spendii-frame" at="content">
    <lift:Save.spend form="post">
+       <div>
+           <lift:Msg id="notices.id" noticeClass="noticeText" />
+       </div>
        <p>Expenditure for <spendii:current_date /></p>
        <div>
            <label for="label">Label:</label>
-           <spendii:label />
+           <spendii:label /><lift:Msg id="label.error" errorClass="errorText" />
        </div>
         <div>
            <label for="cost">Cost:</label>
-           <spendii:cost />
+           <spendii:cost /><lift:Msg id="cost.error" errorClass="errorText" />
         </div>
         <div>
             <label for="description">Description:</label>
-            <spendii:description />
+            <spendii:description /><lift:Msg id="description.error" errorClass="errorText" />
         </div>
         <div>
             <spendii:save_spend />
         </div>
    </lift:Save.spend>
-
    <lift:Load.spends />
 </lift:surround>
