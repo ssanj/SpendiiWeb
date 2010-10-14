@@ -9,14 +9,15 @@ import scala.collection.JavaConversions._
 import xml.{NodeSeq}
 import bootstrap.liftweb.MongoBoot
 import spendii.model.Common._
-import com.mongodb.{DBCursor, BasicDBObject}
+import java.util.{Calendar => Cal}
+import Cal._
+import com.mongodb.{BasicDBList, DBObject, DBCursor, BasicDBObject}
 
 class Load extends Loggable {
 
   def spends(xhtml:NodeSeq): NodeSeq = {
-    val dailySpends = MongoBoot.db.getCollection("sanj.spends")
-    val allSpends = dailySpends.find.asInstanceOf[DBCursor]
-    if (allSpends != null) {
+    val dailySpend = MongoBoot.db.getCollection("sanj.spends").findOne(new BasicDBObject("date", currentDateAsTime))
+    if (dailySpend != null) {
         <div>
               <table>
                 <tr>
@@ -26,13 +27,12 @@ class Load extends Loggable {
                   <th>Description</th>
                 </tr>
               {
-                for(ds <- allSpends.iterator;
-                val spendtry = ds.get("spends").asInstanceOf[BasicDBObject]) yield
+                for(spend <- dailySpend.get("spends").asInstanceOf[BasicDBList]) yield
                  <tr>
-                    <td>{formattedDate(ds.get("date").toString.toLong)}</td>
-                    <td>{spendtry.getString("tag")}</td>
-                    <td>{spendtry.getDouble("cost")}</td>
-                    <td>{spendtry.getString("description")}</td>
+                    <td>{formattedDate(dailySpend.get("date").toString.toLong)}</td>
+                    <td>{spend.asInstanceOf[BasicDBObject].getString("label")}</td>
+                    <td>{spend.asInstanceOf[BasicDBObject].getDouble("cost")}</td>
+                    <td>{spend.asInstanceOf[BasicDBObject].getString("description")}</td>
                   </tr>
               }
             </table>
@@ -44,23 +44,16 @@ class Load extends Loggable {
     }
   }
 
-  def test(xhtml:NodeSeq): NodeSeq = {
-    <table>
-      <tr>
-        <th>Label</th>
-        <th>Cost</th>
-        <th>Description</th>
-      </tr>
-      <tr>
-        <td>lunch</td>
-        <td>$35.45</td>
-        <td>Burger shots at the Purple Gorilla</td>
-      </tr>
-      <tr>
-        <td>misc</td>
-        <td>$7.20</td>
-        <td>Coffee and Hot Chocolate at Chiasso Cafe at QUT</td>
-      </tr>
-    </table>
+  private def removeTime(cal:Cal): Cal = {
+    cal.set(HOUR, 0)
+    cal.set(MINUTE, 0)
+    cal.set(SECOND, 0)
+    cal.set(MILLISECOND, 0)
+    cal
   }
+
+  private def currentDate: Cal = removeTime(Cal.getInstance)
+
+  private def currentDateAsTime: Long = currentDate.getTimeInMillis
+
 }

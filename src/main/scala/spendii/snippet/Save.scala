@@ -10,9 +10,9 @@ import scala.collection.JavaConversions._
 import java.util.Calendar._
 import net.liftweb.util.Helpers._
 import bootstrap.liftweb.MongoBoot
-import com.mongodb.BasicDBObject
 import java.util.{ArrayList, Calendar => Cal}
 import net.liftweb.http.{RequestVar, S, SHtml}
+import com.mongodb.{DBCollection, DBObject, BasicDBObject}
 
 class Save extends Loggable {
 
@@ -32,11 +32,26 @@ class Save extends Loggable {
   private def saveSpend {
     logger.info("label -> " + label + ", cost -> " + cost + ", description -> " + description)
     if (parametersAreValid) {
-      MongoBoot.getCollection("sanj.spends").insert(createSpends)
+      //MongoBoot.getCollection("sanj.spends").insert(createSpends)
+      val col = MongoBoot.getCollection("sanj.spends")
+      var ds = col.findOne(new BasicDBObject("date", currentDateAsTime)).asInstanceOf[BasicDBObject]
+      if (ds == null) {
+        logger.info("creating new collecting for date -> " + currentDateAsTime)
+        col.insert(createBlankDailySpend)
+        ds = col.findOne(new BasicDBObject("date", currentDateAsTime)).asInstanceOf[BasicDBObject]
+      }
+
+      val spends = ds.get("spends").asInstanceOf[java.util.List[AnyRef]]
+      spends.add(createSpend(label, cost.toDouble, description))
+      col.save(ds)
       S.notice("notices.id","Saved Spend")
     } else {
       S.error("There are form errors")
     }
+  }
+
+  private def createBlankDailySpend: BasicDBObject = {
+    new BasicDBObject(Map[String, Any]("date" -> currentDateAsTime, "spends" -> new ArrayList[AnyRef]))
   }
 
   def renderLabel: NodeSeq = {
@@ -53,7 +68,6 @@ class Save extends Loggable {
 
     if (!validLabel){
       S.error("label.error", "Please enter a label.")
-
     }
 
     if (!validCost) {
@@ -77,11 +91,11 @@ class Save extends Loggable {
   }
 
   private def createSpends: BasicDBObject = {
-    new BasicDBObject(Map[String, Any]("date" -> currentDateAsTime, "spends" -> createSpend(label, cost.toDouble, description)))
+    new BasicDBObject(Map[String, Any]("spends" -> createSpend(label, cost.toDouble, description)))
   }
 
- private def createSpend(tag:String, cost:Double, description:String): BasicDBObject = {
-    new BasicDBObject(Map[String, Any]("tag" -> tag, "cost" -> cost, "description" -> description))
+ private def createSpend(label:String, cost:Double, description:String): BasicDBObject = {
+    new BasicDBObject(Map[String, Any]("label" -> label, "cost" -> cost, "description" -> description))
   }
 
   private def sListTojList[T](seq:Seq[T]): java.util.Collection[T] = {
