@@ -5,37 +5,10 @@
 package spendii.mongo
 
 import com.mongodb._
-import spendii.model.{Spend, DailySpend}
 import collection.mutable.ListBuffer
+import spendii.model.{MongoConverter, Spend, DailySpend}
 
 object MongoFunc {
-
-  trait MongoConverter[T] {
-    def convert(dbo:DBObject): T
-  }
-
-  object MongoConverter {
-    implicit object DailySpendConverter extends MongoConverter[DailySpend] {
-       def convert(dbo:DBObject): DailySpend = {
-         val date = dbo.get("date").toString.toLong
-         DailySpend(date, getSpends(dbo.get("spends").asInstanceOf[BasicDBList]): _*)
-       }
-
-       def getSpends(spends:BasicDBList): Seq[Spend] = {
-        import scala.collection.JavaConversions._
-        val buffer = new ListBuffer[Spend]
-        for(spend <- spends.iterator) {
-          buffer += (getSpend(spend.asInstanceOf[DBObject]))
-        }
-        buffer
-       }
-
-       def getSpend(dbo:DBObject): Spend = {
-         //clean this up to use MongoObject with type inference.
-         Spend(dbo.get("description").toString, dbo.get("cost").toString.toDouble, dbo.get("label").toString)
-       }
-    }
-  }
 
   private def jTosMap[A, B](jm:java.util.Map[A, B]): Map[String, AnyRef] = {
     import scala.collection.JavaConversions.JMapWrapper

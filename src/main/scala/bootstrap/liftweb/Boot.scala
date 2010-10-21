@@ -26,7 +26,7 @@ object MongoBoot extends Loggable {
 
     lazy val (server, database) = connect("spendii")
 
-    def deleteCollection(name:String) { getCollection(name).drop }
+    def deleteCollection(name:String) { on(name).drop }
 
-    def getCollection(name:String): MongoCollection = database getCollection name
+    def on(name:String): MongoCollection = database getCollection name
 }

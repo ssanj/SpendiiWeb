@@ -6,13 +6,12 @@ package spendii.snippet
 
 import net.liftweb.common.Loggable
 import xml.NodeSeq
-import scala.collection.JavaConversions._
-import java.util.Calendar._
 import net.liftweb.util.Helpers._
 import bootstrap.liftweb.MongoBoot
-import java.util.{ArrayList, Calendar => Cal}
+import java.util.{ArrayList}
 import net.liftweb.http.{RequestVar, S, SHtml}
 import com.mongodb.{DBCollection, DBObject, BasicDBObject}
+import spendii.model.Common._
 
 class Save extends Loggable {
 
@@ -113,19 +112,4 @@ class Save extends Loggable {
 //    javaList
 //  }
 //
-  private def removeTime(cal:Cal): Cal = {
-    cal.set(HOUR, 0)
-    cal.set(MINUTE, 0)
-    cal.set(SECOND, 0)
-    cal.set(MILLISECOND, 0)
-    cal
-  }
-
-  private def currentDate: Cal = removeTime(Cal.getInstance)
-
-  private def currentDateAsTime: Long = currentDate.getTimeInMillis
-
-  private def currentDateAsString: String = {
-    String.format("%1$tA %1$te %1$tB %1$tY", currentDate)
-  }
 }
