@@ -8,6 +8,7 @@ import net.liftweb.common.Loggable
 import net.liftweb.http.LiftRules
 import net.liftweb.sitemap.{Menu, SiteMap}
 import com.mongodb.{DBCollection, Mongo}
+import spendii.mongo.MongoFunc._
 
 class Boot extends Loggable {
 
@@ -22,9 +23,10 @@ class Boot extends Loggable {
 }
 
 object MongoBoot extends Loggable {
-    lazy val mongo = new Mongo
-    lazy val db = mongo.getDB("spendii")
+
+    lazy val (server, database) = connect("spendii")
+
     def deleteCollection(name:String) { getCollection(name).drop }
 
-    def getCollection(name:String): DBCollection = db getCollection name
+    def getCollection(name:String): MongoCollection = database getCollection name
 }

@@ -12,12 +12,14 @@ import spendii.model.Common._
 import java.util.{Calendar => Cal}
 import Cal._
 import com.mongodb.{BasicDBList, DBObject, DBCursor, BasicDBObject}
+import spendii.model.DailySpend
 
 class Load extends Loggable {
 
   def spends(xhtml:NodeSeq): NodeSeq = {
-    val dailySpend = MongoBoot.db.getCollection("sanj.spends").findOne(new BasicDBObject("date", currentDateAsTime))
-    if (dailySpend != null) {
+    val dailySpend = MongoBoot.getCollection("sanj.dailyspend").findOne[DailySpend]("date", currentDateAsTime)
+    dailySpend match {
+      case Some(ds) =>
         <div>
               <table>
                 <tr>
@@ -27,20 +29,21 @@ class Load extends Loggable {
                   <th>Description</th>
                 </tr>
               {
-                for(spend <- dailySpend.get("spends").asInstanceOf[BasicDBList]) yield
+                for(spend <- ds.spends) yield
                  <tr>
-                    <td>{formattedDate(dailySpend.get("date").toString.toLong)}</td>
-                    <td>{spend.asInstanceOf[BasicDBObject].getString("label")}</td>
-                    <td>{spend.asInstanceOf[BasicDBObject].getDouble("cost")}</td>
-                    <td>{spend.asInstanceOf[BasicDBObject].getString("description")}</td>
+                    <td>{formattedDate(ds.date)}</td>
+                    <td>{spend.label}</td>
+                    <td>{spend.cost}</td>
+                    <td>{spend.description}</td>
                   </tr>
               }
             </table>
         </div>
-    } else {
-      <div>
-        <h3 class="nospends">No Spends</h3>
-      </div>
+      case None =>
+        <div>
+          <h3 class="nospends">No Spends</h3>
+        </div>
+
     }
   }
 
@@ -55,5 +58,24 @@ class Load extends Loggable {
   private def currentDate: Cal = removeTime(Cal.getInstance)
 
   private def currentDateAsTime: Long = currentDate.getTimeInMillis
+}
+
+object B {
+  def main(args: Array[String]) {
+    println(currentDateAsTime)
+  }
+
+  private def removeTime(cal:Cal): Cal = {
+    cal.set(HOUR, 0)
+    cal.set(MINUTE, 0)
+    cal.set(SECOND, 0)
+    cal.set(MILLISECOND, 0)
+    cal
+  }
+
+  private def currentDate: Cal = removeTime(Cal.getInstance)
+
+  private def currentDateAsTime: Long = currentDate.getTimeInMillis
+
 
 }

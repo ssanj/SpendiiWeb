@@ -5,25 +5,35 @@
 package spendii.mongo
 
 import com.mongodb._
+import spendii.model.{Spend, DailySpend}
+import collection.mutable.ListBuffer
 
 object MongoFunc {
 
-  trait Converter[T] {
+  trait MongoConverter[T] {
     def convert(dbo:DBObject): T
   }
 
-  object Converter {
+  object MongoConverter {
+    implicit object DailySpendConverter extends MongoConverter[DailySpend] {
+       def convert(dbo:DBObject): DailySpend = {
+         val date = dbo.get("date").toString.toLong
+         DailySpend(date, getSpends(dbo.get("spends").asInstanceOf[BasicDBList]): _*)
+       }
 
-    implicit object LongConverter extends Converter[Long] {
-      def convert(dbo:DBObject): Long = dbo.get("date").toString.toLong
-    }
+       def getSpends(spends:BasicDBList): Seq[Spend] = {
+        import scala.collection.JavaConversions._
+        val buffer = new ListBuffer[Spend]
+        for(spend <- spends.iterator) {
+          buffer += (getSpend(spend.asInstanceOf[DBObject]))
+        }
+        buffer
+       }
 
-    implicit object PersonConverter extends Converter[Person] {
-      def convert(dbo:DBObject): Person = {
-        val map = jTosMap(dbo.toMap)
-        Person(map("name").toString, map("age").toString.toInt)
-
-      }
+       def getSpend(dbo:DBObject): Spend = {
+         //clean this up to use MongoObject with type inference.
+         Spend(dbo.get("description").toString, dbo.get("cost").toString.toDouble, dbo.get("label").toString)
+       }
     }
   }
 
@@ -39,7 +49,7 @@ object MongoFunc {
   }
 
   case class MongoCursor[T](private val dbc:DBCursor) {
-    def toIterator()(implicit con:Converter[T]): Iterator[T] = {
+    def toIterator()(implicit con:MongoConverter[T]): Iterator[T] = {
       import scala.collection.JavaConversions._
         val it:Iterator[DBObject] = dbc.iterator
         it.map(con.convert(_))
@@ -47,21 +57,17 @@ object MongoFunc {
   }
 
   case class MongoDatabase(private val db:DB) {
-    def getCollection(key:String): Either[String, MongoCollection] =  {
-      val mcollection:MongoCollection = db.getCollection(key)
-      wrapWithKey(mcollection)(key)
-    }
+
+    def getCollection(key:String): MongoCollection = db.getCollection(key)
 
     def drop { db.dropDatabase }
   }
 
   case class MongoCollection(dbc:DBCollection) {
-//    def get[T](key:String)(implicit con:Converter[T]): Either[String, T] = {
-//      wrapWithKey(con.convert(dbc.get(key)))(key)
-//    }
 
-    def findOne[T](key:String, value:Any)(implicit con:Converter[T]): T = {
-      con.convert(dbc.findOne(new BasicDBObject(key, value)))
+    def findOne[T](key:String, value:Any)(implicit con:MongoConverter[T]): Option[T] = {
+      val find = dbc.findOne(new BasicDBObject(key, value))
+      if (find == null) None else  Some(con.convert(find))
     }
 
     def find[T](q:Map[String, AnyRef]): MongoCursor[T] = {
@@ -102,6 +108,12 @@ object MongoFunc {
       (server, database, collection)
   }
 
+  def connect(db:String) : (MongoServer, MongoDatabase) = {
+      val server = new Mongo
+      val database = server.getDB(db)
+      (server, database)
+  }
+
   def connect(host:String, port:Int): MongoServer = new Mongo(host, port)
 
 
@@ -122,17 +134,15 @@ object MongoFunc {
     }
   }
 
-  case class Person(name:String, age:Int)
-
     def main(args: Array[String]) {
       wrap{
         val (server, database, collection) = connect("spendii.sanj", "dailyspends")
-        //collection.drop why can't we drop this?
-        collection.insert(Map("name" -> "sanj", "age" -> 36.asInstanceOf[AnyRef]))
-        //val found = collection.findOne[Person]("name", "sanj")
-        val cursor = collection.find[Person](Map("name" ->"sanj"))
-        val it = cursor.toIterator
-        for (i <- it) println(i)
+        //collection.drop
+//        collection.insert(Map("name" -> "sanj", "age" -> 36.asInstanceOf[AnyRef]))
+//        val found = collection.findOne[Person]("name", "sanj")
+//        val cursor = collection.find[Person](Map("name" ->"sanj"))
+//        val it = cursor.toIterator
+//        for (i <- it) println(i)
       }.fold(l => println("error -> " + l), r => println("success -> " + r))
     }
 
