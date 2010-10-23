@@ -7,8 +7,8 @@ package bootstrap.liftweb
 import net.liftweb.common.Loggable
 import net.liftweb.http.LiftRules
 import net.liftweb.sitemap.{Menu, SiteMap}
-import com.mongodb.{DBCollection, Mongo}
 import spendii.mongo.MongoFunc._
+import spendii.mongo.MongoTypes._
 
 class Boot extends Loggable {
 
@@ -28,5 +28,5 @@ object MongoBoot extends Loggable {
 
     def deleteCollection(name:String) { on(name).drop }
 
-    def on(name:String): MongoCollection = database getCollection name
+    def on(collectionName:String): MongoCollection = database getCollection collectionName
 }

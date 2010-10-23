@@ -9,13 +9,14 @@ import xml.{NodeSeq}
 import bootstrap.liftweb.MongoBoot._
 import spendii.model.Common._
 import spendii.model.DailySpend
+import spendii.mongo.MongoTypes.MongoError
 
 class Load extends Loggable {
 
   def spends(xhtml:NodeSeq): NodeSeq = {
-    val dailySpend = on("sanj.dailyspend").findOne[DailySpend]("date", currentDateAsTime)
+    val dailySpend:Either[MongoError, Option[DailySpend]] = on("sanj.dailyspend").findOne[DailySpend]("date", currentDateAsTime)
     dailySpend match {
-      case Some(ds) =>
+      case Right(Some(ds)) =>
         <div>
               <table>
                 <tr>
@@ -35,11 +36,18 @@ class Load extends Loggable {
               }
             </table>
         </div>
-      case None =>
+      case Right(None) =>
         <div>
           <h3 class="nospends">No Spends</h3>
         </div>
-
+      case Left(ex) =>
+        <div>
+          <h2>Could not Perform Load due to the following error:</h2>
+          <h3 class="exception_message">{ex.message}</h3>
+          <p>
+            <h4 class="exception_stacktract">{ex.stackTrace}</h4>
+          </p>
+        </div>
     }
   }
 }
