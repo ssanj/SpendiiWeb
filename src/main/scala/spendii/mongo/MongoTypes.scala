@@ -19,6 +19,14 @@ object MongoTypes {
     }
   }
 
+  def wrapWith[T](f: => T): Either[MongoError, T] = {
+    try {
+      Right(f)
+    } catch {
+      case e => Left(MongoError(e.getMessage, e.getStackTraceString))
+    }
+  }
+
   /**
    * Captures an <code>Exception</code>'s error message and stacktrace and allows for the unification
    * of errors returned by <code>MongoType</code>s.
@@ -43,12 +51,16 @@ object MongoTypes {
     implicit def dbObjectToMongoObject(dbo:DBObject): MongoObject = MongoObject(dbo)
   }
 
-  case class MongoCursor[T](private val dbc:DBCursor) {
-    def toIterator()(implicit con:MongoConverter[T]): Iterator[T] = {
+  case class MongoCursor(private val dbc:DBCursor) {
+    def toSeq[T](implicit con:MongoConverter[T]): Seq[T] = {
       import scala.collection.JavaConversions._
         val it:Iterator[DBObject] = dbc.iterator
-        it.map(con.convert(_))
+        it.map(con.convert(_)).toSeq
     }
+  }
+
+  object MongoCursor {
+    implicit def dbCursorToMongoCursor(dbc:DBCursor): MongoCursor = MongoCursor(dbc)
   }
 
   case class MongoDatabase(private val db:DB) {
@@ -71,9 +83,12 @@ object MongoTypes {
       }(key)
     }
 
-    def find[T](q:Map[String, AnyRef]): MongoCursor[T] = {
+    def find[T](q:Map[String, AnyRef])(implicit con:MongoConverter[T]): Either[MongoError, Seq[T]] = {
       import scala.collection.JavaConversions._
-      MongoCursor[T](dbc.find(new BasicDBObject(q)))
+      wrapWith{
+        val mc:MongoCursor = dbc.find(new BasicDBObject(q))
+        mc.toSeq[T]
+      }
     }
 
     def insert(key:String, value:Any) { dbc.insert(new BasicDBObject(key, value)) }
