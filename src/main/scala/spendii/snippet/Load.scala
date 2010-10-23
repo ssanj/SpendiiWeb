@@ -45,7 +45,7 @@ class Load extends Loggable {
           <h2>Could not Perform Load due to the following error:</h2>
           <h3 class="exception_message">{ex.message}</h3>
           <p>
-            <h4 class="exception_stacktract">{ex.stackTrace}</h4>
+            <h4 class="exception_stacktrace">{ex.stackTrace}</h4>
           </p>
         </div>
     }

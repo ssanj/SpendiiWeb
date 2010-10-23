@@ -4,8 +4,9 @@
  */
 package spendii.mongo
 
-import spendii.model.MongoConverter
 import com.mongodb._
+import spendii.model.{AnyRefConverter, MongoConverter}
+import collection.mutable.ListBuffer
 
 object MongoTypes {
 
@@ -18,7 +19,29 @@ object MongoTypes {
     }
   }
 
+  /**
+   * Captures an <code>Exception</code>'s error message and stacktrace and allows for the unification
+   * of errors returned by <code>MongoType</code>s.
+   */
   case class MongoError(val message:String, val stackTrace:String)
+
+  case class MongoObject(dbo:DBObject) {
+    def get[T](key:String)(implicit con:AnyRefConverter[T]): T = con.convert(dbo.get(key))
+
+    def getArray[T](key:String)(implicit con:MongoConverter[T]): Seq[T] = {
+      import scala.collection.JavaConversions._
+      val buffer = new ListBuffer[T]
+      for(element <- dbo.get(key).asInstanceOf[BasicDBList].iterator) {
+        buffer += (con.convert(element.asInstanceOf[DBObject]))
+      }
+
+      buffer.toSeq
+    }
+  }
+
+  object MongoObject {
+    implicit def dbObjectToMongoObject(dbo:DBObject): MongoObject = MongoObject(dbo)
+  }
 
   case class MongoCursor[T](private val dbc:DBCursor) {
     def toIterator()(implicit con:MongoConverter[T]): Iterator[T] = {

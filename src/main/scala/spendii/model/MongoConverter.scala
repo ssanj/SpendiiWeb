@@ -4,33 +4,46 @@
  */
 package spendii.model
 
-import com.mongodb.{BasicDBList, DBObject}
-import collection.mutable.ListBuffer
+import spendii.mongo.MongoTypes.MongoObject
 
 trait MongoConverter[T] {
-  def convert(dbo:DBObject): T
+  def convert(dbo:MongoObject): T
+}
+
+trait AnyRefConverter[T] {
+  def convert(anyRef:AnyRef): T
+}
+
+object AnyRefConverter {
+
+  implicit object LongConverter extends AnyRefConverter[Long] {
+    def convert(anyRef:AnyRef): Long = anyRef.toString.toLong
+  }
+
+  implicit object DoubleConverter extends AnyRefConverter[Double] {
+    def convert(anyRef:AnyRef): Double = anyRef.toString.toDouble
+  }
+
+  implicit object StringConverter extends AnyRefConverter[String] {
+    def convert(anyRef:AnyRef): String = anyRef.toString
+  }
 }
 
 object MongoConverter {
 
   implicit object DailySpendConverter extends MongoConverter[DailySpend] {
-     def convert(dbo:DBObject): DailySpend = {
-       val date = dbo.get("date").toString.toLong
-       DailySpend(date, getSpends(dbo.get("spends").asInstanceOf[BasicDBList]): _*)
-     }
 
-     def getSpends(spends:BasicDBList): Seq[Spend] = {
-      import scala.collection.JavaConversions._
-      val buffer = new ListBuffer[Spend]
-      for(spend <- spends.iterator) {
-        buffer += (getSpend(spend.asInstanceOf[DBObject]))
-      }
-      buffer
-     }
-
-     def getSpend(dbo:DBObject): Spend = {
-       //clean this up to use MongoObject with type inference.
-       Spend(dbo.get("description").toString, dbo.get("cost").toString.toDouble, dbo.get("label").toString)
+    def convert(mgo:MongoObject): DailySpend = {
+       val date = mgo.get[Long]("date")
+       DailySpend(date, mgo.getArray[Spend]("spends")(SpendConverter))
      }
   }
+
+  implicit object SpendConverter extends MongoConverter[Spend] {
+
+    def convert(mgo:MongoObject): Spend = {
+       Spend(mgo.get[String]("description"), mgo.get[Double]("cost"), mgo.get[String]("label"))
+     }
+  }
+
 }
