@@ -7,6 +7,7 @@ package spendii.mongo
 import com.mongodb._
 import spendii.model.{AnyRefConverter, MongoConverter}
 import collection.mutable.ListBuffer
+import org.bson.types.ObjectId
 
 object MongoTypes {
 
@@ -27,6 +28,14 @@ object MongoTypes {
     }
   }
 
+  case class MongoObjectId(id:ObjectId) {
+    def toObjectId: ObjectId = id
+  }
+
+  object MongoObjectId {
+    implicit def objectIdToMongoObjectId(id:ObjectId): MongoObjectId = MongoObjectId(id)
+  }
+
   /**
    * Captures an <code>Exception</code>'s error message and stacktrace and allows for the unification
    * of errors returned by <code>MongoType</code>s.
@@ -39,6 +48,8 @@ object MongoTypes {
 
     def get[T](key:String)(implicit con:AnyRefConverter[T]): T = con.convert(dbo.get(key))
 
+    def getId: MongoObjectId = MongoObjectId(dbo.get("_id").asInstanceOf[ObjectId])
+
     def getArray[T](key:String)(implicit con:MongoConverter[T]): Seq[T] = {
       import scala.collection.JavaConversions._
       val buffer = new ListBuffer[T]
@@ -50,6 +61,8 @@ object MongoTypes {
     }
 
     def put(key:String, value:Any) { dbo.put(key, value.asInstanceOf[AnyRef]) }
+
+    def putId(id:MongoObjectId) { dbo.put("_id", id.toObjectId) }
 
     def putArray(key:String, values:Seq[MongoObject]) {
       import scala.collection.JavaConversions._
@@ -106,7 +119,7 @@ object MongoTypes {
 
     def put[T](value:T)(implicit con:MongoConverter[T]): MongoObject =  con.convert(value)
 
-
+    //what should this return?
     def save(mo:MongoObject) {
       dbc.save(mo.toDBObject)
     }

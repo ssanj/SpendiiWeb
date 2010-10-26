@@ -117,9 +117,9 @@ class Save extends Loggable {
 
   def testData(xhtml:NodeSeq): NodeSeq = {
     wrapWith{
-      val m = MongoBoot.onDailySpends.put[DailySpend](DailySpend(currentDateAsTime,
+      val m = MongoBoot.onDailySpends.put[DailySpend](DailySpend(None, currentDateAsTime,
         Seq(Spend("breakfast at PepperLounge", 30.50, "breakfast"), Spend("Chiro for sweets", 40.0, "chiro"))))
-      MongoBoot.onDailySpends.save(m)      
+      MongoBoot.onDailySpends.save(m)
     }.fold(displayErrorAndStay, r => displaySuccessAndGoHome)
   }
 

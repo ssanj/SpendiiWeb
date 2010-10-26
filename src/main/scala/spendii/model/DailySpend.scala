@@ -4,6 +4,8 @@
  */
 package spendii.model
 
+import spendii.mongo.MongoTypes.MongoObjectId
+
 case class Spend(val description:String, val cost:Double, val label:String)
 
-case class DailySpend(val date:Long, val spends:Seq[Spend])
+case class DailySpend(val id:Option[MongoObjectId], val date:Long, val spends:Seq[Spend])

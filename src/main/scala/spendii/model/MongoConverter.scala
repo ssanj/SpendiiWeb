@@ -4,8 +4,8 @@
  */
 package spendii.model
 
-import spendii.mongo.MongoTypes.MongoObject
 import com.mongodb.BasicDBObject
+import spendii.mongo.MongoTypes.{MongoObjectId, MongoObject}
 
 trait MongoConverter[T] {
   def convert(dbo:MongoObject): T
@@ -34,14 +34,15 @@ object AnyRefConverter {
 object MongoConverter {
 
   implicit object DailySpendConverter extends MongoConverter[DailySpend] {
-
     def convert(mgo:MongoObject): DailySpend = {
+       val id = mgo.getId
        val date = mgo.get[Long]("date")
-       DailySpend(date, mgo.getArray[Spend]("spends")(SpendConverter))
+       DailySpend(Some(id), date, mgo.getArray[Spend]("spends")(SpendConverter))
      }
 
     def convert(ds:DailySpend): MongoObject = {
       val mo = new MongoObject()
+      ds.id.foreach(mo.putId)
       mo.put("date", ds.date)
       mo.putArray("spends", ds.spends.map(SpendConverter.convert(_)))
       mo
