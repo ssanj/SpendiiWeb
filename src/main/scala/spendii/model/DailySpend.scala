@@ -10,5 +10,5 @@ import collection.mutable.ListBuffer
 case class Spend(val description:String, val cost:Double, val label:String)
 
 case class DailySpend(val id:Option[MongoObjectId], val date:Long, val spends:Seq[Spend]) {
-  def add(sp:Spend): DailySpend = DailySpend(id, date, (new ListBuffer() += sp ++= spends).toSeq)
+  def add(sp:Spend): DailySpend = DailySpend(id, date, (new ListBuffer() ++= spends += sp).toSeq)
 }

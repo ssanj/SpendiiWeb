@@ -21,15 +21,6 @@ class Save extends Loggable {
   private var cost:String = ""
   private var description:String = ""
 
-//  def spend(xhtml:NodeSeq): NodeSeq = {
-//    bind("spendii", xhtml,
-//      "current_date" -> currentDateAsString,
-//      "label" -> SHtml.text(label, label = _, ("id", "label")),
-//      "cost" -> SHtml.text(cost, cost = _, ("id", "cost")),
-//      "description" -> SHtml.textarea(description, description = _, ("rows", "3"), ("cols", "50")),
-//      "save_spend" -> SHtml.submit("save", () => {}))
-//  }
-
   def spend(xhtml:NodeSeq): NodeSeq = {
     bind("spendii", xhtml,
       "current_date" -> currentDateAsString,
@@ -40,35 +31,25 @@ class Save extends Loggable {
   }
 
   private def saveSpend {
-    logger.info("label -> " + label + ", cost -> " + cost + ", description -> " + description)
     if (parametersAreValid) {
       val col = MongoBoot.onDailySpends
-      var found:Either[MongoError, Option[DailySpend]] = MongoBoot.onDailySpends.findOne[DailySpend]("date", currentDateAsTime)
+      var found = MongoBoot.onDailySpends.findOne[DailySpend]("date", currentDateAsTime)
       found match {
-        case Left(me) => S.error("There are database errors ->" + me)
-        case Right(Some(ds)) => //found one
-        case Right(None) => {
-          logger.info("creating new collecting for date -> " + currentDateAsTime)
-          col.save(col.put[DailySpend](createBlankDailySpend))
-        }
+        case Left(me) => S.error(displayError(me))
+        case Right(Some(ds)) => saveDailySpend(col, ds.add(Spend(description, cost.toDouble, label)))
+        case Right(None) => saveDailySpend(col, createNewSpend)
       }
-      col.findOne[DailySpend]("date", currentDateAsTime).fold(l => S.error("There are database errors -> " + l), op => {
-        op.map{ds =>
-          col.save(col.put[DailySpend](ds.add(Spend(description, cost.toDouble, label))))
-          S.notice("notices.id","Saved Spend")
-        }
-      })
     } else {
       S.error("There are form errors")
     }
   }
 
-  private def createBlankDailySpend: DailySpend =  DailySpend(None, currentDateAsTime, List[Spend]())
-
-  def renderLabel: NodeSeq = {
-    if (!isLabelValid) <div>Please enter a label</div>
-    else NodeSeq.Empty
+  private def saveDailySpend(col:MongoCollection, ds:DailySpend) {
+    col.save(col.put[DailySpend](ds))
+    S.notice("notices.id","Saved Spend")
   }
+
+  private def createNewSpend: DailySpend =  DailySpend(None, currentDateAsTime, List(Spend(description, cost.toDouble, label)))
 
   def isLabelValid: Boolean = !label.trim.isEmpty
 
