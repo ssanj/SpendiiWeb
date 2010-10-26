@@ -1,6 +1,4 @@
 $(document).ready(function() {
     $('#enabled').hide();
-    $('#description').resizable({
-        handles: 'se'
-    });
+    $('#notices_id').slideUp(2000);
 });

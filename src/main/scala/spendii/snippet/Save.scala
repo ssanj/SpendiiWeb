@@ -46,7 +46,7 @@ class Save extends Loggable {
 
   private def saveDailySpend(col:MongoCollection, ds:DailySpend) {
     col.save(col.put[DailySpend](ds))
-    S.notice("notices.id","Saved Spend")
+    S.notice("notices_id","Saved Spend")
   }
 
   private def createNewSpend: DailySpend =  DailySpend(None, currentDateAsTime, List(Spend(description, cost.toDouble, label)))
