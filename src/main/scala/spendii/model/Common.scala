@@ -6,6 +6,8 @@ package spendii.model
 
 import java.util.{Calendar => Cal}
 import Cal._
+import xml.NodeSeq
+import spendii.mongo.MongoTypes.MongoError
 
 object Common {
 
@@ -28,4 +30,28 @@ object Common {
   def currentDateAsTime: Long = currentDate.getTimeInMillis
 
   def currentDateAsString = formattedDate(currentDateAsTime)
+
+  def displayError(me:MongoError): NodeSeq = {
+      <div>
+        <h2>Could not Perform Load due to the following error:</h2>
+        <h3 class="exception_message">{me.message}</h3>
+        <p>
+          <h4 class="exception_stacktrace">{me.stackTrace}</h4>
+        </p>
+      </div>
+  }
+
+  def displayNoSpends: NodeSeq = {
+    <div>
+      <h3 class="nospends">No Spends</h3>
+    </div>
+  }
+
+  def displaySuccess(msg:String): NodeSeq = {
+    <div>
+      <h3 class="success">{msg}</h3>
+    </div>
+  }
+
+
 }

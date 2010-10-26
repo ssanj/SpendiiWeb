@@ -5,9 +5,11 @@
 package spendii.model
 
 import spendii.mongo.MongoTypes.MongoObject
+import com.mongodb.BasicDBObject
 
 trait MongoConverter[T] {
   def convert(dbo:MongoObject): T
+  def convert(t:T): MongoObject
 }
 
 trait AnyRefConverter[T] {
@@ -37,6 +39,13 @@ object MongoConverter {
        val date = mgo.get[Long]("date")
        DailySpend(date, mgo.getArray[Spend]("spends")(SpendConverter))
      }
+
+    def convert(ds:DailySpend): MongoObject = {
+      val mo = new MongoObject()
+      mo.put("date", ds.date)
+      mo.putArray("spends", ds.spends.map(SpendConverter.convert(_)))
+      mo
+    }
   }
 
   implicit object SpendConverter extends MongoConverter[Spend] {
@@ -44,6 +53,14 @@ object MongoConverter {
     def convert(mgo:MongoObject): Spend = {
        Spend(mgo.get[String]("description"), mgo.get[Double]("cost"), mgo.get[String]("label"))
      }
+
+    def convert(sp:Spend): MongoObject = {
+      val mo = new MongoObject()
+      mo.put("label", sp.label)
+      mo.put("cost", sp.cost)
+      mo.put("description", sp.description)
+      mo
+    }
   }
 
 }

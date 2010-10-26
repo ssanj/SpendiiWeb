@@ -34,6 +34,9 @@ object MongoTypes {
   case class MongoError(val message:String, val stackTrace:String)
 
   case class MongoObject(dbo:DBObject) {
+
+    def this() = this(new BasicDBObject)
+
     def get[T](key:String)(implicit con:AnyRefConverter[T]): T = con.convert(dbo.get(key))
 
     def getArray[T](key:String)(implicit con:MongoConverter[T]): Seq[T] = {
@@ -45,6 +48,16 @@ object MongoTypes {
 
       buffer.toSeq
     }
+
+    def put(key:String, value:Any) { dbo.put(key, value.asInstanceOf[AnyRef]) }
+
+    def putArray(key:String, values:Seq[MongoObject]) {
+      import scala.collection.JavaConversions._
+      val list:java.util.List[DBObject] = values.map(_.toDBObject)
+      dbo.put(key, list)
+    }
+
+    def toDBObject: DBObject = dbo
   }
 
   object MongoObject {
@@ -91,11 +104,11 @@ object MongoTypes {
       }
     }
 
-    def insert(key:String, value:Any) { dbc.insert(new BasicDBObject(key, value)) }
+    def put[T](value:T)(implicit con:MongoConverter[T]): MongoObject =  con.convert(value)
 
-    def insert(map:Map[String, AnyRef]) {
-      import scala.collection.JavaConversions._
-      dbc.insert(new BasicDBObject(map))
+
+    def save(mo:MongoObject) {
+      dbc.save(mo.toDBObject)
     }
 
     def drop = dbc.drop

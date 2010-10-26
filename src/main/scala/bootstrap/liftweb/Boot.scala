@@ -18,6 +18,7 @@ class Boot extends Loggable {
     LiftRules.setSiteMap(SiteMap(
       Menu("Home") / "home",
       Menu("Load All Spends") / "all_spends",
+      Menu("Test Data") / "test_data",
       Menu("Delete") / "delete"))
   }
 }
@@ -29,4 +30,8 @@ object MongoBoot extends Loggable {
     def deleteCollection(name:String) { on(name).drop }
 
     def on(collectionName:String): MongoCollection = database getCollection collectionName
+
+    def onDailySpends: MongoCollection = database getCollection DAILY_SPENDS_KEY
+
+    private val DAILY_SPENDS_KEY = "sanj.dailyspend"
 }

@@ -12,6 +12,8 @@ import java.util.{ArrayList}
 import net.liftweb.http.{RequestVar, S, SHtml}
 import com.mongodb.{DBCollection, DBObject, BasicDBObject}
 import spendii.model.Common._
+import spendii.model.{Spend, DailySpend}
+import spendii.mongo.MongoTypes._
 
 class Save extends Loggable {
 
@@ -27,7 +29,7 @@ class Save extends Loggable {
       "description" -> SHtml.textarea(description, description = _, ("rows", "3"), ("cols", "50")),
       "save_spend" -> SHtml.submit("save", () => {}))
   }
-
+// col.put[DailySpend](key:String, DailySpend(currentDateAsTime, List(Spend("blah", 20.3, "blah2"))
 
 //  def spend(xhtml:NodeSeq): NodeSeq = {
 //    bind("spendii", xhtml,
@@ -112,4 +114,22 @@ class Save extends Loggable {
 //    javaList
 //  }
 //
+
+  def testData(xhtml:NodeSeq): NodeSeq = {
+    wrapWith{
+      val m = MongoBoot.onDailySpends.put[DailySpend](DailySpend(currentDateAsTime,
+        Seq(Spend("breakfast at PepperLounge", 30.50, "breakfast"), Spend("Chiro for sweets", 40.0, "chiro"))))
+      MongoBoot.onDailySpends.save(m)      
+    }.fold(displayErrorAndStay, r => displaySuccessAndGoHome)
+  }
+
+  private def displayErrorAndStay(me:MongoError): NodeSeq = {
+    displayError(me)
+  }
+
+  private def displaySuccessAndGoHome: NodeSeq = {
+    S.notice("notice.id", "Successfully inserted spends")
+    S.redirectTo("home")
+    NodeSeq.Empty
+  }
 }
