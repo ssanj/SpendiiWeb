@@ -28,6 +28,10 @@ object MongoTypes {
     }
   }
 
+  trait MongoObjectReference {
+    def getId: Option[MongoObjectId]
+  }
+
   case class MongoObjectId(id:ObjectId) {
     def toObjectId: ObjectId = id
   }

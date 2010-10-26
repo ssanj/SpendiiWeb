@@ -4,8 +4,11 @@
  */
 package spendii.model
 
-import spendii.mongo.MongoTypes.MongoObjectId
+import spendii.mongo.MongoTypes.{MongoObjectId}
+import collection.mutable.ListBuffer
 
 case class Spend(val description:String, val cost:Double, val label:String)
 
-case class DailySpend(val id:Option[MongoObjectId], val date:Long, val spends:Seq[Spend])
+case class DailySpend(val id:Option[MongoObjectId], val date:Long, val spends:Seq[Spend]) {
+  def add(sp:Spend): DailySpend = DailySpend(id, date, (new ListBuffer() += sp ++= spends).toSeq)
+}
