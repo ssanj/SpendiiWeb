@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:lift="http://liftweb.net" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+        <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+        <title>Spendii</title>
+        <script src="scripts/jquery-1.4.2.min.js" charset="UTF-8" type="text/javascript"></script>
+        <script src="scripts/spendii2.js" charset="UTF-8" type="text/javascript"></script>
+        <link charset="UTF-8" media="screen" type="text/css" href="css/spendii2.css" rel="stylesheet" />
+    
+	
+</head>
+<body>
+        <div>
+            <p id="enabled">You should enable Javascript</p>
+        </div>
+
+    <div class="headings_container"> 
+        <div><span id="notices_id"></span></div>
+        <h1>Expenditure for Thursday 28 October 2010</h1>
+    </div>
+   <div class="form_container">    
+       <form action="/home" method="post">           
+                 <div class="form_element">
+                     <label for="description" >Description:</label>
+                     <textarea name="F487430566379JGU"></textarea><span id="description.error"></span>
+                 </div>
+                 <div class="form_element">
+                    <label for="cost" >Cost:</label>
+                    <input value="" name="F4874305663784KS" type="text" id="cost" class="textfield"/><span id="cost.error"></span>
+                 </div>
+                 <div class="form_element">
+                     <label for="label">Label:</label>
+                     <input value="" name="F487430566377S3T" type="text" id="label" class="textfield"/><span id="label.error"></span>
+                 </div>
+                  <div id="submit_button" class="form_element">
+                      <input name="F487430576380JJP" type="submit" value="Save" class="button"/>
+                  </div>
+       </form>
+   </div>
+   <!--div class="table_container">
+          <table>
+            <tr>
+              <th>Date</th>
+              <th>Label</th>
+              <th>Cost</th>
+              <th>Description</th>
+            </tr>
+          <tr>
+                <td>Thursday 28 October 2010</td>
+                <td>coffee</td>
+                <td>3.8</td>
+                <td>Caramel Latter @ the Expresso Engine</td>
+              </tr>
+        </table>
+    </div>
+
+        <div id="menu">
+            <ul>
+            	<li> <span>Home</span></li>
+            	<li> <a href="/all_spends">Load All Spends</a></li>
+            	<li> <a href="/test_data">Test Data</a></li>
+            	<li> <a href="/delete">Delete</a></li>
+           </ul>
+        </div -->
+    <script type="text/javascript" src="/ajax_request/liftAjax.js"></script>
+
+	
+<script type="text/javascript">
+// <![CDATA[
+jQuery(document).ready(function() {liftAjax.lift_successRegisterGC();});
+var lift_page = "F487430566376OUB";
+// ]]>
+</script></body>
+</html>  
+  
