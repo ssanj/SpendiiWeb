@@ -46,6 +46,17 @@ object MongoTypes {
    */
   case class MongoError(val message:String, val stackTrace:String)
 
+  case class MongoWriteResult(wr:WriteResult) {
+    def getMongoError: Option[MongoError] = {
+      val error = wr.getError
+      if (error == null) None else Some(MongoError(error, wrapWith(wr.getLastError.getException.getStackTraceString).toString))
+    }
+  }
+
+  object MongoWriteResult {
+    implicit def writeResultToMongoWriteResult(wr:WriteResult): MongoWriteResult = MongoWriteResult(wr)
+  }
+
   case class MongoObject(dbo:DBObject) {
 
     def this() = this(new BasicDBObject)
@@ -101,7 +112,7 @@ object MongoTypes {
   }
 
   object MongoDatabase {
-        implicit def dbToMongoDatabase(db:DB): MongoDatabase = MongoDatabase(db)
+      implicit def dbToMongoDatabase(db:DB): MongoDatabase = MongoDatabase(db)
   }
 
   case class MongoCollection(dbc:DBCollection) {
@@ -123,12 +134,15 @@ object MongoTypes {
 
     def put[T](value:T)(implicit con:MongoConverter[T]): MongoObject =  con.convert(value)
 
-    //what should this return?
-    def save(mo:MongoObject) {
-      dbc.save(mo.toDBObject)
+    def save(mo:MongoObject): Either[MongoError, Unit] = {
+      import MongoWriteResult._
+      dbc.save(mo.toDBObject).getMongoError match {
+        case None => Right()
+        case Some(me) => Left(me)
+      }
     }
 
-    def drop = dbc.drop
+    def drop: Either[MongoError, Unit] = wrapWith(dbc.drop)
   }
 
   object MongoCollection {

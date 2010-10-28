@@ -7,7 +7,7 @@ p {
 }
 
 h1, h2 {
-  color: gray;
+  color: #3366CC;
 }
 
 h1 {
@@ -52,4 +52,9 @@ form div label {
 
 .noticeText {
     color: green;
+}
+
+.form {
+    margin: 50px 0 100px 0;
+    border-bottom: 1px solid black;
 }

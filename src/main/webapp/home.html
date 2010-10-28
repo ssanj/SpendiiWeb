@@ -3,22 +3,24 @@
        <div>
            <lift:Msg id="notices_id" noticeClass="noticeText" />
        </div>
-       <p>Expenditure for <spendii:current_date /></p>
-       <div>
-           <label for="label">Label:</label>
-           <spendii:label /><lift:Msg id="label.error" errorClass="errorText" />
+       <h1>Expenditure for <spendii:current_date /></h1>
+       <div class="form">
+           <div>
+               <label for="description">Description:</label>
+               <spendii:description /><lift:Msg id="description.error" errorClass="errorText" />
+           </div>
+           <div>
+              <label for="cost">Cost:</label>
+              <spendii:cost /><lift:Msg id="cost.error" errorClass="errorText" />
+           </div>
+           <div>
+               <label for="label">Label:</label>
+               <spendii:label /><lift:Msg id="label.error" errorClass="errorText" />
+           </div>
+            <div>
+                <spendii:save_spend />
+            </div>
        </div>
-        <div>
-           <label for="cost">Cost:</label>
-           <spendii:cost /><lift:Msg id="cost.error" errorClass="errorText" />
-        </div>
-        <div>
-            <label for="description">Description:</label>
-            <spendii:description /><lift:Msg id="description.error" errorClass="errorText" />
-        </div>
-        <div>
-            <spendii:save_spend />
-        </div>
    </lift:Save.spend>
    <lift:Load.spends />
 </lift:surround>
