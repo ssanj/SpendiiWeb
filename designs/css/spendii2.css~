@@ -37,17 +37,17 @@ th {
     color: green;
 }
 
-.table_container {
-  margin: 0 0 20px 160px;
-  border:1px solid blue;
-}
+#.table_container {
+#  margin: 0 0 20px 160px;
+#  border:1px solid blue;
+#}
 
 form {
   margin: 20px; 
   border:1px solid black;
 }
 
-.form_container { 
+.form_container, .table_container { 
   margin: 0 20% 20px 20%;
   border:1px solid black;
   padding-top: 10px;
