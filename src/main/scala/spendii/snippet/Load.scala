@@ -4,13 +4,14 @@
  */
 package spendii.snippet
 
-import net.liftweb.common.Loggable
 import xml.{NodeSeq}
 import bootstrap.liftweb.MongoBoot._
 import spendii.model.Common._
 import spendii.model.DailySpend
 import spendii.mongo.MongoTypes.MongoError
 import net.liftweb.util.Helpers._
+import net.liftweb.http.TemplateFinder
+import net.liftweb.common.{Empty, Failure, Full, Loggable}
 
 class Load extends Loggable {
 
@@ -36,15 +37,24 @@ class Load extends Loggable {
   }
 
   private def getSpendContent(ds:DailySpend): NodeSeq = {
+    TemplateFinder.findAnyTemplate(List("spend_content")) match {
+      case Full(t) => renderDailySpend(t, ds)
+      case Empty => <tr>displayNoSpends</tr>
+      case Failure(msg, _, _) => <tr>displayError(msg)</tr>
+    }
+  }
+
+  def renderDailySpend(xhtml:NodeSeq, ds:DailySpend): NodeSeq = {
     val count = (1 to ds.spends.length).iterator
-    for{spend <- ds.spends} yield
-     <tr>
-        <td>{count.next}</td>
-        <td>{spend.label}</td>
-        <td class="cost">{spend.cost}</td>
-        <td>{spend.description}</td>
-        <td><a href="/delete_single_spend">X</a></td>
-      </tr>
+    for(spend <- ds.spends) yield
+      <tr>{
+      bind("content", xhtml,
+        "count" -> count.next.toString,
+        "label" -> spend.label,
+        "cost" -%> <span>{spend.cost}</span>,
+        "description" -> spend.description)
+        }</tr>
+
   }
 
   def loadAll(xhtml:NodeSeq): NodeSeq = {

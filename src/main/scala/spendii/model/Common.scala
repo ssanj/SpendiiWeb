@@ -8,6 +8,7 @@ import java.util.{Calendar => Cal}
 import Cal._
 import xml.NodeSeq
 import spendii.mongo.MongoTypes.MongoError
+import net.liftweb.common.Failure
 
 object Common {
 
@@ -38,6 +39,13 @@ object Common {
         <p>
           <h4 class="exception_stacktrace">{me.stackTrace}</h4>
         </p>
+      </div>
+  }
+
+  def displayError(ex:String): NodeSeq = {
+      <div>
+        <h2>Could not Perform Operation due to the following error:</h2>
+        <h3 class="exception_message">{ex}</h3>
       </div>
   }
 
