@@ -92,14 +92,15 @@ textarea {
   padding: 10px;
 }
 
+
 ul {
   list-style-type: none;
-  margin: 0 0 20px 160px;
+  margin: 0 0 20px 160px;  
 }
 
 li {
  float: left;
- padding: 25px;
+ padding: 25px; 
 }
 
 .headings_container {

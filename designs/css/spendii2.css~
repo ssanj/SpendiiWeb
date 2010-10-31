@@ -51,6 +51,7 @@ form {
   margin: 0 20% 20px 20%;
   border:1px solid black;
   padding-top: 10px;
+  width: 800px;
 }
 
 label {  
@@ -91,14 +92,18 @@ textarea {
   padding: 10px;
 }
 
+.menu {
+	border:1px solid blue;	
+}
+
 ul {
   list-style-type: none;
-  margin: 0 0 20px 160px;
+  margin: 0 0 20px 160px;  
 }
 
 li {
  float: left;
- padding: 25px;
+ padding: 25px; 
 }
 
 .headings_container {
