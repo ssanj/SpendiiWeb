@@ -62,3 +62,8 @@ form div label {
 .cost {
     text-align: right;
 }
+
+span.total {
+    font-style: italic;
+    color: gray;
+}

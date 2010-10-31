@@ -11,4 +11,5 @@ case class Spend(val description:String, val cost:Double, val label:String)
 
 case class DailySpend(val id:Option[MongoObjectId], val date:Long, val spends:Seq[Spend]) {
   def add(sp:Spend): DailySpend = DailySpend(id, date, (new ListBuffer() ++= spends += sp).toSeq)
+  def total: Double = spends.foldLeft(0D)(_ + _.cost)
 }

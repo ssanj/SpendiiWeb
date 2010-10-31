@@ -24,6 +24,7 @@ class Load extends Loggable {
   }
   private def displaySpends(xhtml:NodeSeq, ds:DailySpend): NodeSeq = {
       bind("spends", xhtml,
+        "total" -%> <span>${ds.total}</span>,
         "content" -> getSpendContent(ds))
   }
 
