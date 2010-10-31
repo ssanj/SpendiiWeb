@@ -1,17 +1,6 @@
 <lift:surround with="spendii-frame" at="content">
-    <lift:Load.loadAll>
+    <lift:Load.loadAll eager_eval="true">
         <h1>Expenses for <spends:date /> <spends:total class="total"/></h1>
-        <div>
-            <table>
-                <tr>
-                  <th>#</th>
-                  <th>Label</th>
-                  <th>Cost</th>
-                  <th>Description</th>
-                  <th>Actions</th>
-                </tr>
-                <spends:content />
-            </table>
-        </div>
+        <lift:embed what="spend_table" />
     </lift:Load.loadAll>
 </lift:surround>
