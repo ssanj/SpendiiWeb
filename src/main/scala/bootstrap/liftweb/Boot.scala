@@ -17,7 +17,7 @@ class Boot extends Loggable {
     LiftRules.addToPackages("spendii")
     LiftRules.setSiteMap(SiteMap(
       Menu("Home") / "home",
-      Menu("Load All Spends") / "all_spends",
+      Menu("Load All Spends") / "load-all-dailyspends",
       Menu("Test Data") / "test_data",
       Menu("Delete") / "delete"))
   }

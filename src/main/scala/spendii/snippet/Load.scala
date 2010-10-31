@@ -28,6 +28,13 @@ class Load extends Loggable {
         "content" -> getSpendContent(ds))
   }
 
+  private def displaySingleSpend(xhtml:NodeSeq, ds:DailySpend): NodeSeq = {
+      bind("spends", xhtml,
+        "date" -> formattedDate(ds.date),
+        "total" -%> <span>${ds.total}</span>,
+        "content" -> getSpendContent(ds))
+  }
+
   private def getSpendContent(ds:DailySpend): NodeSeq = {
     val count = (1 to ds.spends.length).iterator
     for{spend <- ds.spends} yield
@@ -41,16 +48,15 @@ class Load extends Loggable {
   }
 
   def loadAll(xhtml:NodeSeq): NodeSeq = {
-//    val dailySpends:Either[MongoError, Seq[DailySpend]] = on("sanj.dailyspend").find[DailySpend](Map.empty)
-//    dailySpends match {
-//      case Right(Nil) => displayNoSpends
-//      case Right(seqOfDailySpends) =>
-//        for (ds <- seqOfDailySpends) yield
-//          <p>
-//            {displaySpends(ds)}
-//          </p>
-//      case Left(ex) => displayError(ex)
-//    }
-    NodeSeq.Empty
+    val dailySpends:Either[MongoError, Seq[DailySpend]] = on("sanj.dailyspend").find[DailySpend](Map.empty)
+    dailySpends match {
+      case Right(Nil) => displayNoSpends
+      case Right(seqOfDailySpends) =>
+        for (ds <- seqOfDailySpends) yield
+          <div>
+            {displaySingleSpend(xhtml, ds)}
+          </div>
+      case Left(ex) => displayError(ex)
+    }
   }
 }
