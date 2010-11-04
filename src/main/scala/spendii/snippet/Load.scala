@@ -55,7 +55,7 @@ class Load extends Loggable {
         "label" -> indexSpend.spend.label,
         "cost" -%> <span>{indexSpend.spend.cost}</span>,
         "description" -> indexSpend.spend.description,
-        "delete" -> SHtml.ajaxButton("delete", () => {deleteSpend(indexSpend.spend, indexSpend.index)}))
+        "delete" -> SHtml.a(<span>delete</span>)(deleteSpend(indexSpend.spend, indexSpend.index)))
         }</tr>
 
   }
