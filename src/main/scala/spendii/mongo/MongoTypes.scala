@@ -132,6 +132,7 @@ object MongoTypes {
       }
     }
 
+    //rename this to something like createMongoObject
     def put[T](value:T)(implicit con:MongoConverter[T]): MongoObject =  con.convert(value)
 
     def save(mo:MongoObject): Either[MongoError, Unit] = {

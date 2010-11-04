@@ -11,7 +11,7 @@ import spendii.mongo.MongoTypes.MongoError
 import net.liftweb.common.Failure
 
 object Common {
-
+    
   def formattedDate(date: Long): String =  String.format("%1$tA %1$te %1$tB %1$tY", {
     val cal = Cal.getInstance
     cal.setTimeInMillis(date)

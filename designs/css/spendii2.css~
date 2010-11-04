@@ -1,22 +1,24 @@
 body {
- font-family: sans-serif;
+ font-family: Verdana, Helvetica, Arial, sans-serif;
+ width: 800px;
+ padding: 20px;
+ margin-left: auto;
+ margin-right: auto;
 }
-
 
 h1, h2 {
-  color: #3366CC;
+  #color: #3366CC;
+  color: #FFFFFF;  
+  background-color: #778899;
+  border-bottom: 1px solid DimGray;
+  border-right: 1px solid DimGray;
 }
-
-h1 {
-  border-bottom: 1px solid black;
-}
-
 
 table {
-  margin-left: 20px;
-  margin-right: 20px;
   border: thin solid black;
   border-collapse: collapse;
+  width: 100%;
+  font-style: italic;  
 }
 
 td, th {
@@ -25,7 +27,12 @@ td, th {
 }
 
 th {
-  background-color: #cc6600;
+  background-color: #87CEEB;
+  line-height: 2em;
+}
+
+td {
+	line-height: 1.6em;	
 }
 
 .errorText {
@@ -37,21 +44,23 @@ th {
     color: green;
 }
 
-#.table_container {
-#  margin: 0 0 20px 160px;
-#  border:1px solid blue;
-#}
-
 form {
   margin: 20px; 
-  border:1px solid black;
+  #border:1px solid black;
 }
 
-.form_container, .table_container { 
-  margin: 0 20% 20px 20%;
-  border:1px solid black;
-  padding-top: 10px;
-  width: 800px;
+.form_container, .table_container {     
+  width: 100%;  
+}
+
+.form_container {
+	border:1px solid gray;
+	margin-bottom: 100px;	
+}
+
+.table_container {
+	border:1px solid red;
+	margin-bottom: 100px;	
 }
 
 label {  
@@ -64,46 +73,44 @@ label {
 
 textarea, .textfield {
 	width: 420px;
-	font-size: 2em;
+	font-size: 1.3em;
 }
 
 .button {
-	width: 210px;
+	width: 170px;
 	text-align: center;
-	height: 60px;
-	background-color: #FF9900;
-	-moz-border-radius: 20px;
-   -webkit-border-radius: 20px;
-   font-family: Verdana, Helvetica, Arial, sans-serif;
-   font-size: 2em;	
+	height: 40x;
+	background-color: #4169E1;
+	border-bottom: 1px solid blue;
+	border-right: 1px solid blue;
+	 
+   font-size: 1.8em;   	
 }
 
 #submit_button {
 	width: 540px;
-	text-align: right;	
+	text-align: right;
+	background-color: #696969;
+	
 }
 
 textarea {
-	height: 6em;	
+	height: 4em;
+}
+
+#menu {
+	width: 100%;
+	text-align: center;
 }
 
 .form_element {
-  #border:1px solid black;
-  padding: 10px;
+  padding: 10px; 	
 }
 
-.menu {
-	border:1px solid blue;	
-}
-
-ul {
+ul li {
   list-style-type: none;
-  margin: 0 0 20px 160px;  
-}
-
-li {
- float: left;
- padding: 25px; 
+  display: inline;
+  padding: 25px; 
 }
 
 .headings_container {

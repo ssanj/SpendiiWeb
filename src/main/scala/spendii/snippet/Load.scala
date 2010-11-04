@@ -7,11 +7,14 @@ package spendii.snippet
 import xml.{NodeSeq}
 import bootstrap.liftweb.MongoBoot._
 import spendii.model.Common._
-import spendii.model.DailySpend
 import spendii.mongo.MongoTypes.MongoError
 import net.liftweb.util.Helpers._
-import net.liftweb.http.TemplateFinder
 import net.liftweb.common.{Empty, Failure, Full, Loggable}
+import net.liftweb.http.js.JsCmds._
+import spendii.model.{Spend, DailySpend}
+import net.liftweb.http.{S, SHtml, TemplateFinder}
+import net.liftweb.http.js.{JE, JsCmd}
+import net.liftweb.http.js.JE.{Str, JsRaw}
 
 class Load extends Loggable {
 
@@ -45,16 +48,34 @@ class Load extends Loggable {
   }
 
   def renderDailySpend(xhtml:NodeSeq, ds:DailySpend): NodeSeq = {
-    val count = (1 to ds.spends.length).iterator
-    for(spend <- ds.spends) yield
-      <tr>{
+    for(indexSpend <- ds.indexedSpends) yield
+      <tr id={"sp" + indexSpend.index} >{
       bind("content", xhtml,
-        "count" -> count.next.toString,
-        "label" -> spend.label,
-        "cost" -%> <span>{spend.cost}</span>,
-        "description" -> spend.description)
+        "count" -> indexSpend.index.toString,
+        "label" -> indexSpend.spend.label,
+        "cost" -%> <span>{indexSpend.spend.cost}</span>,
+        "description" -> indexSpend.spend.description,
+        "delete" -> SHtml.ajaxButton("delete", () => {deleteSpend(indexSpend.spend, indexSpend.index)}))
         }</tr>
 
+  }
+
+  def deleteSpend(sp:Spend, count:Int): JsCmd = {
+    val dailySpend:Either[MongoError, Option[DailySpend]] = on("sanj.dailyspend").findOne[DailySpend]("date", currentDateAsTime)
+    dailySpend match {
+      case Right(Some(ds)) => {
+         val col = on("sanj.dailyspend")
+         col.save(col.put[DailySpend](ds.remove(sp))).left.map(printError)
+         logger.info("sp -> " + sp.label + " : " + count)
+         JE.Call("delete_spend", Str("sp" + count))
+      }
+      case Right(None) => Noop
+      case Left(ex) => printError(ex); Noop
+    }
+  }
+
+  def printError(me:MongoError) {
+    S.error("Could not delete spend. " + me.message + ", " + me.stackTrace)
   }
 
   def loadAll(xhtml:NodeSeq): NodeSeq = {
