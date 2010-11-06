@@ -1,26 +1,41 @@
 <lift:surround with="spendii-frame" at="content">
+    <div id="global_message">
+        <div>
+            <lift:Msg id="notices_id" noticeClass="noticeText"/>
+        </div>
+        <div class="warningText">
+            <lift:Msg id="warnings_id" />
+        </div>
+        <div class="errorText">
+            <lift:Msg id="errors_id" />
+        </div>
+    </div>
+
    <lift:Save.spend form="post">
-       <div>
-           <lift:Msg id="notices_id" noticeClass="noticeText" />
+       <div id="save_form_error_container" class="formErrorHeading">
+        <lift:Msg id="save_form_error" />
        </div>
        <h1>Expenditure for <spendii:current_date /></h1>
        <div class="form">
            <div>
                <label for="description">Description:</label>
-               <spendii:description /><lift:Msg id="description.error" errorClass="errorText" />
+               <spendii:description /><lift:Msg id="description_error" errorClass="errorText" />
            </div>
            <div>
               <label for="cost">Cost:</label>
-              <spendii:cost /><lift:Msg id="cost.error" errorClass="errorText" />
+              <spendii:cost /><lift:Msg id="cost_error" errorClass="errorText" />
            </div>
            <div>
                <label for="label">Label:</label>
-               <spendii:label /><lift:Msg id="label.error" errorClass="errorText" />
+               <spendii:label /><lift:Msg id="label_error" errorClass="errorText" />
            </div>
             <div>
                 <spendii:save_spend />
             </div>
        </div>
    </lift:Save.spend>
+    <div id="load_form_error_container" class="formErrorHeading">
+     <lift:Msg id="load_form_error" />
+    </div>
    <lift:embed what="load-dailyspend" />
 </lift:surround>

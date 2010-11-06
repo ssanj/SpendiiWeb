@@ -3,7 +3,7 @@ import sbt._
 class Project(info: ProjectInfo) extends DefaultWebProject(info) {
 
   lazy val artifactory = "Artifactory Release" at "http://hyperion:9080/artifactory/libs-releases"
-  lazy val liftVersion = "2.1-RC2"
+  lazy val liftVersion = "2.2-M1"
 
   lazy val mongoDriver = "org.mongodb" % "mongo-java-driver" % "2.1" withSources()
 

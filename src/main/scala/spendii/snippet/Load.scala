@@ -15,6 +15,8 @@ import spendii.model.{Spend, DailySpend}
 import net.liftweb.http.{S, SHtml, TemplateFinder}
 import net.liftweb.http.js.{JE, JsCmd}
 import net.liftweb.http.js.JE.{Str, JsRaw}
+import LiftWithEase._
+import spendii.model.TemplateKeys.LoadSpendFormLabels._
 
 class Load extends Loggable {
 
@@ -23,7 +25,7 @@ class Load extends Loggable {
     dailySpend match {
       case Right(Some(ds)) => displaySpends(xhtml, ds)
       case Right(None) => displayNoSpends
-      case Left(ex) => displayError(ex)
+      case Left(ex) => ex
     }
   }
   private def displaySpends(xhtml:NodeSeq, ds:DailySpend): NodeSeq = {
@@ -87,7 +89,7 @@ class Load extends Loggable {
           <div>
             {displaySingleSpend(xhtml, ds)}
           </div>
-      case Left(ex) => displayError(ex)
+      case Left(ex) => ex
     }
   }
 }

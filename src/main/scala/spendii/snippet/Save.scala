@@ -14,6 +14,8 @@ import com.mongodb.{DBCollection, DBObject, BasicDBObject}
 import spendii.model.Common._
 import spendii.model.{Spend, DailySpend}
 import spendii.mongo.MongoTypes._
+import spendii.snippet.LiftWithEase._
+import spendii.model.TemplateKeys.SaveSpendFormLabels._
 
 class Save extends Loggable {
 
@@ -35,17 +37,17 @@ class Save extends Loggable {
       val col = MongoBoot.onDailySpends
       var found = MongoBoot.onDailySpends.findOne[DailySpend]("date", currentDateAsTime)
       found match {
-        case Left(me) => S.error(displayError(me))
+        case Left(me) => error(me)
         case Right(Some(ds)) => saveDailySpend(col, ds.add(Spend(description, cost.toDouble, label)))
         case Right(None) => saveDailySpend(col, createNewSpend)
       }
     } else {
-      S.error("There are form errors")
+      error(form_error, "There are form errors")
     }
   }
 
   private def saveDailySpend(col:MongoCollection, ds:DailySpend) {
-    col.save(col.put[DailySpend](ds)).fold(me => S.warning(displayError(me)), r => S.notice("notices_id","Saved Spend"))    
+    col.save(col.put[DailySpend](ds)).fold(me => error(me), r => notice("Saved Spend"))
   }
 
   private def createNewSpend: DailySpend =  DailySpend(None, currentDateAsTime, List(Spend(description, cost.toDouble, label)))
@@ -58,15 +60,15 @@ class Save extends Loggable {
     val validDescription = !description.trim.isEmpty
 
     if (!validLabel){
-      S.error("label.error", "Please enter a label.")
+      error(label_error, "Please enter a label.")
     }
 
     if (!validCost) {
-      S.error("cost.error", "Please enter a numeric cost.")
+      error(cost_error, "Please enter a numeric cost.")
     }
 
     if (!validDescription) {
-      S.error("description.error", "Please enter a description.")
+      error(description_error, "Please enter a description.")
     }
 
     validLabel && validCost && validDescription
@@ -94,7 +96,7 @@ class Save extends Loggable {
   }
 
   private def displaySuccessAndGoHome: NodeSeq = {
-    S.notice("notice.id", "Successfully inserted spends")
+    notice("Successfully inserted spends")
     S.redirectTo("home")
     NodeSeq.Empty
   }

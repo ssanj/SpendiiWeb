@@ -45,13 +45,40 @@ form div label {
     margin: 5px 20px 0 -160px;
 }
 
-.errorText {
+.errorText, .exception_message, .exception_stacktrace, .exception_context_message {
+    background-color: olive;
     color: white;
-    background-color: blue;
+}
+
+.exception_stacktrace {
+    text-align: left;
+    font-size: x-small;
+    font-style: italic;
+}
+
+.errorText, .exception_context_message {
+    text-align: center;
+}
+
+.errorText {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border:solid 1px #8b0000;
 }
 
 .noticeText {
-    color: green;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: green;
+    border:solid 1px #006400;
+    color: white;
+    text-align: center;
+}
+
+.warningText {
+    color: #db7093;
 }
 
 .form {
@@ -66,4 +93,14 @@ form div label {
 span.total {
     font-style: italic;
     color: gray;
+}
+
+.formErrorHeading {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #6495ed;
+    border:solid 1px black;
+    color: white;
+    text-align: center;
 }

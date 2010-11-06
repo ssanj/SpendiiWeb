@@ -11,7 +11,7 @@ import spendii.mongo.MongoTypes.MongoError
 import net.liftweb.common.Failure
 
 object Common {
-    
+
   def formattedDate(date: Long): String =  String.format("%1$tA %1$te %1$tB %1$tY", {
     val cal = Cal.getInstance
     cal.setTimeInMillis(date)
@@ -32,9 +32,9 @@ object Common {
 
   def currentDateAsString = formattedDate(currentDateAsTime)
 
-  def displayError(me:MongoError): NodeSeq = {
+  implicit def displayError(me:MongoError): NodeSeq = {
       <div>
-        <h2>Could not Perform Load due to the following error:</h2>
+        <h2 class="exception_context_message">Could not Perform Load due to the following error:</h2>
         <h3 class="exception_message">{me.message}</h3>
         <p>
           <h4 class="exception_stacktrace">{me.stackTrace}</h4>

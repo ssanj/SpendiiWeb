@@ -1,6 +1,5 @@
 $(document).ready(function() {
     $('#enabled').hide();
-    $('#notices_id').slideUp(10000);
 });
 
 function delete_spend(rowId) {
