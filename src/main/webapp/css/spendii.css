@@ -128,3 +128,15 @@ span.total {
   width: 100%;
   background-color: #696969;
 }
+
+.title {
+    font-size: Large;
+    background-color: #696969;
+    color: white;
+    text-align: center;
+}
+.slogan {
+    font-style: italic;
+    font-size: small;
+}
+

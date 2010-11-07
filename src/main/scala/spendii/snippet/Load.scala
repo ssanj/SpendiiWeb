@@ -25,7 +25,7 @@ class Load extends Loggable {
     dailySpend match {
       case Right(Some(ds)) => displaySpends(xhtml, ds)
       case Right(None) => displayNoSpends
-      case Left(ex) => ex
+      case Left(ex) => error(form_error, ex); NodeSeq.Empty
     }
   }
   private def displaySpends(xhtml:NodeSeq, ds:DailySpend): NodeSeq = {

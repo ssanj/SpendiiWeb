@@ -34,8 +34,7 @@
             </div>
        </div>
    </lift:Save.spend>
-    <div id="load_form_error_container" class="formErrorHeading">
-     <lift:Msg id="load_form_error" />
-    </div>
-   <lift:embed what="load-dailyspend" />
+   <lift:surround with="load-dailyspend-surround" at="content">
+       <lift:embed what="load-dailyspend" />
+   </lift:surround>
 </lift:surround>
