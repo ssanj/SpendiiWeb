@@ -31,35 +31,18 @@ class Load extends Loggable {
   private def displaySpends(xhtml:NodeSeq, ds:DailySpend): NodeSeq = {
       bind("spends", xhtml,
         "total" -%> <span>${ds.total}</span>,
-        "content" -> getSpendContent(ds))
+        "row" -> displayRowWithDeletes(ds) _)
   }
 
-  private def displaySingleSpend(xhtml:NodeSeq, ds:DailySpend): NodeSeq = {
-      bind("spends", xhtml,
-        "date" -> formattedDate(ds.date),
-        "total" -%> <span>${ds.total}</span>,
-        "content" -> getSpendContent(ds))
-  }
-
-  private def getSpendContent(ds:DailySpend): NodeSeq = {
-    TemplateFinder.findAnyTemplate(List("spend_content")) match {
-      case Full(t) => renderDailySpend(t, ds)
-      case Empty => <tr>displayNoSpends</tr>
-      case Failure(msg, _, _) => <tr>displayError(msg)</tr>
-    }
-  }
-
-  def renderDailySpend(xhtml:NodeSeq, ds:DailySpend): NodeSeq = {
-    for(indexSpend <- ds.indexedSpends) yield
-      <tr id={"sp" + indexSpend.index} >{
+  def displayRowWithDeletes(ds:DailySpend)(xhtml:NodeSeq): NodeSeq = {
+    ds.indexedSpends.flatMap(indexSpend =>
       bind("content", xhtml,
+        AttrBindParam("idval", ("sp" + indexSpend.index), "id"),
         "count" -> indexSpend.index.toString,
         "label" -> indexSpend.spend.label,
         "cost" -%> <span>{indexSpend.spend.cost}</span>,
         "description" -> indexSpend.spend.description,
-        "delete" -> SHtml.a(<span>delete</span>)(deleteSpend(indexSpend.spend, indexSpend.index)))
-        }</tr>
-
+        "delete" -> SHtml.a(<span>delete</span>)(deleteSpend(indexSpend.spend, indexSpend.index))))
   }
 
   def deleteSpend(sp:Spend, count:Int): JsCmd = {
@@ -85,11 +68,25 @@ class Load extends Loggable {
     dailySpends match {
       case Right(Nil) => displayNoSpends
       case Right(seqOfDailySpends) =>
-        for (ds <- seqOfDailySpends) yield
-          <div>
-            {displaySingleSpend(xhtml, ds)}
-          </div>
+        seqOfDailySpends.flatMap(ds => {
+          bind("spends", xhtml,
+            "date" -> formattedDate(ds.date),
+            "total" -%> <span>${ds.total}</span>,
+            "table" -> displayTable(ds) _)})
       case Left(ex) => ex
     }
+  }
+
+  def displayTable(ds:DailySpend)(xhtml:NodeSeq): NodeSeq = {
+    bind("table", xhtml, "row" -> displayRowNoDeletes(ds) _)
+  }
+
+  def displayRowNoDeletes(ds:DailySpend)(xhtml:NodeSeq): NodeSeq = {
+    ds.indexedSpends.flatMap(indexSpend =>
+      bind("content", xhtml,
+        "count" -> indexSpend.index.toString,
+        "label" -> indexSpend.spend.label,
+        "cost" -%> <span>{indexSpend.spend.cost}</span>,
+        "description" -> indexSpend.spend.description))
   }
 }
