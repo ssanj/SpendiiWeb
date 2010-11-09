@@ -5,16 +5,20 @@
 package bootstrap.liftweb
 
 import net.liftweb.common.Loggable
-import net.liftweb.http.LiftRules
 import net.liftweb.sitemap.{Menu, SiteMap}
 import spendii.mongo.MongoFunc._
 import spendii.mongo.MongoTypes._
+import net.liftweb.http.LiftRules
+import spendii.dispatch.LoadAll
 
 class Boot extends Loggable {
 
   def boot {
     LiftRules.early.append{ _.setCharacterEncoding("UTF-8")}
     LiftRules.addToPackages("spendii")
+    LiftRules.snippetDispatch.append{
+      case "loadAllSpends" => LoadAll
+    }
     LiftRules.setSiteMap(SiteMap(
       Menu("Home") / "home",
       Menu("Load All Spends") / "load-all-dailyspends",
