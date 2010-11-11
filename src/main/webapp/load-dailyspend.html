@@ -1,6 +1,7 @@
 <lift:Load.spends eager_eval=”true”>
     <h1>Current Expenditure <spends:total class="total"/></h1>
     <table>
+        <thead>
         <tr>
           <th>#</th>
           <th>Label</th>
@@ -8,16 +9,19 @@
           <th>Description</th>
           <th>Actions</th>
         </tr>
-         <spends:row>
-             <tr content:idval="">
-                <td><content:count/></td>
-                <td><content:label/></td>
-                <td class="cost"><content:cost/></td>
-                <td><content:description/></td>
-                <td>
-                    <content:delete />
-                </td>
-             </tr>
-         </spends:row>
+        </thead>
+        <tbody>
+             <spends:row>
+                 <tr content:idval="">
+                    <td><content:count/></td>
+                    <td><content:label/></td>
+                    <td class="cost"><content:cost/></td>
+                    <td><content:description/></td>
+                    <td>
+                        <content:delete />
+                    </td>
+                 </tr>
+             </spends:row>
+        </tbody>
      </table>
 </lift:Load.spends>

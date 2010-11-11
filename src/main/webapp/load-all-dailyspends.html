@@ -3,20 +3,24 @@
         <h1>Expenses for <spends:date /> <spends:total class="total"/></h1>
             <spends:table>
             <table>
-            <tr>
-              <th>#</th>
-              <th>Label</th>
-              <th>Cost</th>
-              <th>Description</th>
-            </tr>
-             <table:row>
-             <tr>
-                <td><content:count/></td>
-                <td><content:label/></td>
-                <td class="cost"><content:cost/></td>
-                <td><content:description/></td>
-             </tr>
-             </table:row>
+            <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Label</th>
+                  <th>Cost</th>
+                  <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                 <table:row>
+                 <tr>
+                    <td><content:count/></td>
+                    <td><content:label/></td>
+                    <td class="cost"><content:cost/></td>
+                    <td><content:description/></td>
+                 </tr>
+                 </table:row>
+            </tbody>    
         </table>
         </spends:table>
     </lift:loadAllSpends>

@@ -2,21 +2,22 @@ $(document).ready(function() {
     $('#enabled').hide();
 });
 
-function delete_spend(rowId) {
-   var node = document.getElementById(rowId);
-   var parent = node.parentNode
-   parent.removeChild(node);
+function delete_spend(rowName) {
+	var row = '#' + rowName;
+ 	$(row).animate({'backgroundColor' : 'red'}, 'slow', function() { removeRow($(this)); });
 
-   var index = 1;
-   for (var x=0; x < parent.childNodes.length; x++) {
-    var row = parent.childNodes[x];
-    for (var y=0; y < row.childNodes.length; y++) {
-      if (row.childNodes[y] instanceof HTMLTableCellElement) {
-        if (row.childNodes[y].firstChild.data != '#') {
-            row.childNodes[y].firstChild.data = index++;
-        }
-        break;
-     }
-    }
+   function removeRow(row) {
+   	$(row).fadeOut('slow', function() { updateTotal(row); $(row).remove(); renumber(); });
+   }
+
+   function updateTotal(row) {
+   	var rowValue = parseFloat($(row).find('td:nth-child(3)').text());
+    var totalTag = $('span.total');
+   	var oldTotal = parseFloat(totalTag.text().substring(1)); //jump over the $ sign
+   	totalTag.text('$' + (oldTotal - rowValue).toFixed(1));//1 decimal place
+   }
+
+   function renumber() {
+		$('tbody tr').each(function() { $(this).find('td:first').text($(this).index() + 1);	});
    }
 }
