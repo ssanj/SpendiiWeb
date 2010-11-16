@@ -1,13 +1,14 @@
 $(document).ready(function() {
     $('#enabled').hide();
+    $('#description').focus();
 });
 
 function delete_spend(rowName) {
 	var row = '#' + rowName;
- 	$(row).animate({'backgroundColor' : 'red'}, 'slow', function() { removeRow($(this)); });
+ 	$(row).animate({'backgroundColor' : 'red'}, 'fast', function() { removeRow($(this)); });
 
    function removeRow(row) {
-   	$(row).fadeOut('slow', function() { updateTotal(row); $(row).remove(); renumber(); });
+   	$(row).fadeOut('fast', function() { updateTotal(row); $(row).remove(); renumber(); });
    }
 
    function updateTotal(row) {
@@ -25,4 +26,3 @@ function delete_spend(rowName) {
 function show_ajax_error(id, message) {
  $('#'+id).fadeIn().text(message);
 }
-

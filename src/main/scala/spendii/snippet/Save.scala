@@ -16,6 +16,7 @@ import spendii.model.{Spend, DailySpend}
 import spendii.mongo.MongoTypes._
 import spendii.snippet.LiftWithEase._
 import spendii.model.TemplateKeys.SaveSpendFormLabels._
+import net.liftweb.http.js.JsCmds._ 
 
 class Save extends Loggable {
 
@@ -28,8 +29,8 @@ class Save extends Loggable {
       "current_date" -> currentDateAsString,
       "label" -> SHtml.text(label, label = _, ("id", "label")),
       "cost" -> SHtml.text(cost, cost = _, ("id", "cost")),
-      "description" -> SHtml.textarea(description, description = _, ("rows", "3"), ("cols", "50")),
-      "save_spend" -> SHtml.submit("save", () => saveSpend))
+      "description" -> FocusOnLoad(SHtml.textarea(description, description = _, ("id", "description"), ("rows", "3"), ("cols", "50"))),
+      "save_spend" -> SHtml.submit("save", () => saveSpend, ("id", "save_button")))
   }
 
   private def saveSpend {

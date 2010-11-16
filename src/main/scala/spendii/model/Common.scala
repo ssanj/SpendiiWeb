@@ -40,7 +40,7 @@ object Common {
           "context" -> "Could not perform function",
           "message" -> me.message,
           "stacktrace" -> me.stackTrace)
-      case _ => <div>The folllowing error occurred : {me.message}. Could not load error template to display additional information.</div>
+      case _ => <div>The following error occurred : {me.message}. Could not load error template to display additional information.</div>
     }
   }
 
