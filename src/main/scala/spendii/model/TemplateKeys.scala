@@ -20,6 +20,7 @@ object TemplateKeys {
   }
 
   object LoadSpendFormLabels {
-      val form_error = "load_form_error"
+      val load_form_error = "load_form_error"
+      val spend_deletion_error = "spend_deletion_error"
   }
 }

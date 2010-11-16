@@ -6,9 +6,11 @@ package spendii.model
 
 import java.util.{Calendar => Cal}
 import Cal._
-import xml.NodeSeq
 import spendii.mongo.MongoTypes.MongoError
-import net.liftweb.common.Failure
+import net.liftweb.http.TemplateFinder
+import net.liftweb.util.Helpers._
+import net.liftweb.common.{Full, Failure}
+import xml.{Text, NodeSeq}
 
 object Common {
 
@@ -33,13 +35,13 @@ object Common {
   def currentDateAsString = formattedDate(currentDateAsTime)
 
   implicit def displayError(me:MongoError): NodeSeq = {
-      <div>
-        <h2 class="exception_context_message">Could not Perform Load due to the following error:</h2>
-        <h3 class="exception_message">{me.message}</h3>
-        <p>
-          <h4 class="exception_stacktrace">{me.stackTrace}</h4>
-        </p>
-      </div>
+    TemplateFinder.findAnyTemplate(List("exception")) match {
+      case Full(xhtml) => bind("exception", xhtml,
+          "context" -> "Could not perform function",
+          "message" -> me.message,
+          "stacktrace" -> me.stackTrace)
+      case _ => <div>The folllowing error occurred : {me.message}. Could not load error template to display additional information.</div>
+    }
   }
 
   def displayError(ex:String): NodeSeq = {

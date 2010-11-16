@@ -25,7 +25,7 @@ class Load extends Loggable {
     dailySpend match {
       case Right(Some(ds)) => displaySpends(xhtml, ds)
       case Right(None) => displayNoSpends
-      case Left(ex) => error(form_error, ex); NodeSeq.Empty
+      case Left(ex) => error(load_form_error, ex); NodeSeq.Empty
     }
   }
   private def displaySpends(xhtml:NodeSeq, ds:DailySpend): NodeSeq = {
@@ -49,17 +49,14 @@ class Load extends Loggable {
     val dailySpend:Either[MongoError, Option[DailySpend]] = on("sanj.dailyspend").findOne[DailySpend]("date", currentDateAsTime)
     dailySpend match {
       case Right(Some(ds)) => {
-         val col = on("sanj.dailyspend")
-         col.save(col.put[DailySpend](ds.remove(sp))).left.map(printError)
-         logger.info("sp -> " + sp.label + " : " + count)
-         JE.Call("delete_spend", Str("sp" + count))
+        val col = on("sanj.dailyspend")
+        col.save(col.put[DailySpend](ds.remove(sp))).
+          fold(ex => callErrorFunc(ex.message), r => JE.Call("delete_spend", Str("sp" + count)))
       }
-      case Right(None) => Noop
-      case Left(ex) => printError(ex); Noop
+      case Right(None) => callErrorFunc("Could not find expenditure for " + currentDateAsString)
+      case Left(ex) => callErrorFunc(ex.message)
     }
   }
 
-  def printError(me:MongoError) {
-    S.error("Could not delete spend. " + me.message + ", " + me.stackTrace)
-  }
+  def callErrorFunc(message:String): JsCmd =  JE.Call("show_ajax_error", Str(load_form_error), Str(message))
 }

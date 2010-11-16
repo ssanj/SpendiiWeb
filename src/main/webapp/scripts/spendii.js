@@ -21,3 +21,8 @@ function delete_spend(rowName) {
 		$('tbody tr').each(function() { $(this).find('td:first').text($(this).index() + 1);	});
    }
 }
+
+function show_ajax_error(id, message) {
+ $('#'+id).fadeIn().text(message);
+}
+
