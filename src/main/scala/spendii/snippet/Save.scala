@@ -20,6 +20,8 @@ import net.liftweb.http.js.JsCmds._
 
 class Save extends Loggable {
 
+  private val user:String = "sanj"
+
   private var label:String = ""
   private var cost:String = ""
   private var description:String = ""
@@ -43,8 +45,8 @@ class Save extends Loggable {
   }
 
   private def editSpend {
-    val col = MongoBoot.onDailySpends
-    var found = MongoBoot.onDailySpends.findOne[DailySpend]("date", currentDateAsTime)
+    val col = MongoBoot.getDailySpend(user)
+    var found = col.findOne[DailySpend]("date", currentDateAsTime)
     found match {
       case Left(me) => error(getError(cantFindExpenditure, me))
       case Right(Some(ds)) => saveDailySpend(col, ds.replace(Spend(oDescription, oCost.toDouble, oLabel), Spend(description, cost.toDouble, label)))
@@ -56,8 +58,8 @@ class Save extends Loggable {
 
   private def saveSpend {
     if (parametersAreValid) {
-      val col = MongoBoot.onDailySpends
-      var found = MongoBoot.onDailySpends.findOne[DailySpend]("date", currentDateAsTime)
+      val col = MongoBoot.getDailySpend(user)
+      var found = col.findOne[DailySpend]("date", currentDateAsTime)
       found match {
         case Left(me) => error(me)
         case Right(Some(ds)) => saveDailySpend(col, ds.add(Spend(description, cost.toDouble, label)))
@@ -105,21 +107,7 @@ class Save extends Loggable {
     }
   }
 
-  def testData(xhtml:NodeSeq): NodeSeq = {
-    wrapWith{
-      val m = MongoBoot.onDailySpends.put[DailySpend](DailySpend(None, currentDateAsTime,
-        Seq(Spend("breakfast at PepperLounge", 30.50, "breakfast"), Spend("Chiro for sweets", 40.0, "chiro"))))
-      MongoBoot.onDailySpends.save(m)
-    }.fold(displayErrorAndStay, r => displaySuccessAndGoHome)
-  }
-
   private def displayErrorAndStay(me:MongoError): NodeSeq = {
     displayError(me)
-  }
-
-  private def displaySuccessAndGoHome: NodeSeq = {
-    notice("Successfully inserted spends")
-    S.redirectTo("home")
-    NodeSeq.Empty
   }
 }

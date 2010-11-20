@@ -22,20 +22,27 @@ class Boot extends Loggable {
     LiftRules.setSiteMap(SiteMap(
       Menu("Home") / "home",
       Menu("Load All Spends") / "load-all-dailyspends",
-      Menu("Test Data") / "test_data",
       Menu("Delete") / "delete"))
   }
 }
 
 object MongoBoot extends Loggable {
 
+    object Collections {
+      val dailyspend = "dailyspend"
+    }
+
     lazy val (server, database) = connect("spendii")
 
     def deleteCollection(name:String) { on(name).drop }
 
-    def on(collectionName:String): MongoCollection = database getCollection collectionName
+    //all the "on" methods currently are for a hardcoded user.
 
-    def onDailySpends: MongoCollection = database getCollection DAILY_SPENDS_KEY
+    def on = getCollection("sanj") _
 
-    private val DAILY_SPENDS_KEY = "sanj.dailyspend"
+    def getCollection(username:String)(collectionName:String): MongoCollection = database getCollection userCollection(username, collectionName)
+
+    def getDailySpend = getCollection(_:String)(Collections.dailyspend)
+
+    def userCollection(username:String, collectionName:String): String = username + "." + collectionName
 }

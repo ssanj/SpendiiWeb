@@ -20,8 +20,10 @@ import spendii.model.TemplateKeys.LoadSpendFormLabels._
 
 class Load extends Loggable {
 
+  val user:String = "sanj"
+
   def spends(xhtml:NodeSeq): NodeSeq = {
-    val dailySpend:Either[MongoError, Option[DailySpend]] = on("sanj.dailyspend").findOne[DailySpend]("date", currentDateAsTime)
+    val dailySpend:Either[MongoError, Option[DailySpend]] = getDailySpend(user).findOne[DailySpend]("date", currentDateAsTime)
     dailySpend match {
       case Right(Some(ds)) => displaySpends(xhtml, ds)
       case Right(None) => displayNoSpends
@@ -50,10 +52,10 @@ class Load extends Loggable {
   def editSpend(sp:Spend, count:Int): JsCmd = JE.Call("update_form_for_edit", Str(sp.description), Str(sp.cost.toString), Str(sp.label))
 
   def deleteSpend(sp:Spend, count:Int): JsCmd = {
-    val dailySpend:Either[MongoError, Option[DailySpend]] = on("sanj.dailyspend").findOne[DailySpend]("date", currentDateAsTime)
+    val dailySpend:Either[MongoError, Option[DailySpend]] = getDailySpend(user).findOne[DailySpend]("date", currentDateAsTime)
     dailySpend match {
       case Right(Some(ds)) => {
-        val col = on("sanj.dailyspend")
+        val col = getDailySpend(user)
         col.save(col.put[DailySpend](ds.remove(sp))).
           fold(ex => callErrorFunc(ex.message), r => JE.Call("delete_spend", Str("sp" + count)))
       }

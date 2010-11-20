@@ -7,15 +7,12 @@ package spendii.snippet
 import xml.NodeSeq
 import net.liftweb.common.Loggable
 import bootstrap.liftweb.MongoBoot
-import java.lang.System
 import net.liftweb.http.{ResponseShortcutException, S}
 import spendii.model.Common._
-import spendii.mongo.MongoTypes.MongoError
-
 class Delete extends Loggable {
 
   def spend(xhtml:NodeSeq): NodeSeq = {
-      MongoBoot.onDailySpends.drop.fold(
+      MongoBoot.getDailySpend("sanj").drop.fold(
         displayError,
         r => {
           S.notice("notice.id", "Successfully deleted spends")
