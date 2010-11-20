@@ -11,6 +11,9 @@ class Project(info: ProjectInfo) extends DefaultWebProject(info) {
     "net.liftweb" %% "lift-webkit" % liftVersion % "compile->default" withSources(),
     "net.liftweb" %% "lift-common" % liftVersion % "compile->default" withSources(),
     "net.liftweb" %% "lift-mapper" % liftVersion % "compile->default" withSources(),
+    "net.liftweb" %% "lift-util" % liftVersion % "compile->default" withSources(),
+    "org.slf4j" % "slf4j-simple" % "1.6.1" % "compile->default",  
+    "org.scalatest" % "scalatest" % "1.2" % "test->default" withSources(),
     "org.mortbay.jetty" % "jetty" % "6.1.22" % "test->default"
     ) ++ super.libraryDependencies
 }

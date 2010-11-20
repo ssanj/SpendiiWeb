@@ -16,7 +16,7 @@ import spendii.model.{Spend, DailySpend}
 import spendii.mongo.MongoTypes._
 import spendii.snippet.LiftWithEase._
 import spendii.model.TemplateKeys.SaveSpendFormLabels._
-import net.liftweb.http.js.JsCmds._ 
+import net.liftweb.http.js.JsCmds._
 
 class Save extends Loggable {
 
@@ -24,14 +24,35 @@ class Save extends Loggable {
   private var cost:String = ""
   private var description:String = ""
 
+  private var oDescription:String = ""
+  private var oCost:String = ""
+  private var oLabel:String = ""
+
   def spend(xhtml:NodeSeq): NodeSeq = {
     bind("spendii", xhtml,
       "current_date" -> currentDateAsString,
       "label" -> SHtml.text(label, label = _, ("id", "label")),
       "cost" -> SHtml.text(cost, cost = _, ("id", "cost")),
       "description" -> FocusOnLoad(SHtml.textarea(description, description = _, ("id", "description"), ("rows", "3"), ("cols", "50"))),
-      "save_spend" -> SHtml.submit("save", () => saveSpend, ("id", "save_button")))
+      "olabel" -> SHtml.hidden(oLabel = _, oLabel, ("id", "olabel")),
+      "ocost" -> SHtml.hidden(oCost = _, oCost, ("id", "ocost")),
+      "odescription" -> SHtml.hidden(oDescription = _, oDescription, ("id", "odescription")),
+      "save_spend" -> SHtml.submit("save", () => saveSpend, ("id", "save_button")),
+      "edit_spend" -> SHtml.submit("edit", () => editSpend, ("id", "edit_button"))
+      )
   }
+
+  private def editSpend {
+    val col = MongoBoot.onDailySpends
+    var found = MongoBoot.onDailySpends.findOne[DailySpend]("date", currentDateAsTime)
+    found match {
+      case Left(me) => error(getError(cantFindExpenditure, me))
+      case Right(Some(ds)) => saveDailySpend(col, ds.replace(Spend(oDescription, oCost.toDouble, oLabel), Spend(description, cost.toDouble, label)))
+      case Right(None) => error(cantFindExpenditure)
+    }
+  }
+
+  private def cantFindExpenditure: String = "Could not find expenditure for " +  currentDateAsString
 
   private def saveSpend {
     if (parametersAreValid) {

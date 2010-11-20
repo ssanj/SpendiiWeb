@@ -20,17 +20,21 @@
            <div>
                <label for="description">Description:</label>
                <spendii:description /><lift:Msg id="description_error" errorClass="form_element_error" />
+               <spendii:odescription />
            </div>
            <div>
               <label for="cost">Cost:</label>
               <spendii:cost /><lift:Msg id="cost_error" errorClass="form_element_error" />
+               <spendii:ocost/>
            </div>
            <div>
                <label for="label">Label:</label>
                <spendii:label /><lift:Msg id="label_error" errorClass="form_element_error" />
+               <spendii:olabel/>
            </div>
             <div>
                 <spendii:save_spend />
+                <spendii:edit_spend />
             </div>
        </div>
    </lift:Save.spend>

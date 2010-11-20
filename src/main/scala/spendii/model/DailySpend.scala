@@ -13,6 +13,8 @@ case class DailySpend(val id:Option[MongoObjectId], val date:Long, val spends:Se
 
   def add(sp:Spend): DailySpend = DailySpend(id, date, (new ListBuffer() ++= spends += sp).toSeq)
 
+  def replace(sp1:Spend, sp2:Spend): DailySpend = DailySpend(id, date, spends.map(sp => if (sp == sp1) sp2 else sp))
+
   def remove(sp:Spend): DailySpend = DailySpend(id, date, spends.filterNot(_ == sp))
 
   def total: Double = spends.foldLeft(0D)(_ + _.cost)

@@ -44,6 +44,16 @@ object Common {
     }
   }
 
+  def getError(context:String, me:MongoError): NodeSeq = {
+    TemplateFinder.findAnyTemplate(List("exception")) match {
+      case Full(xhtml) => bind("exception", xhtml,
+          "context" -> context,
+          "message" -> me.message,
+          "stacktrace" -> me.stackTrace)
+      case _ => <div>The following error occurred : {me.message}. Could not load error template to display additional information.</div>
+    }
+  }
+
   def displayError(ex:String): NodeSeq = {
       <div>
         <h2>Could not Perform Operation due to the following error:</h2>

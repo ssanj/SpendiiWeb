@@ -42,8 +42,12 @@ class Load extends Loggable {
         "label" -> indexSpend.spend.label,
         "cost" -%> <span>{indexSpend.spend.cost}</span>,
         "description" -> indexSpend.spend.description,
-        "delete" -> SHtml.a(<span>delete</span>)(deleteSpend(indexSpend.spend, indexSpend.index))))
+        "delete" -> SHtml.a(<span class="action">delete</span>)(deleteSpend(indexSpend.spend, indexSpend.index)),
+        "edit" -> SHtml.a(<span class="action">edit</span>)(editSpend(indexSpend.spend, indexSpend.index))
+      ))
   }
+
+  def editSpend(sp:Spend, count:Int): JsCmd = JE.Call("update_form_for_edit", Str(sp.description), Str(sp.cost.toString), Str(sp.label))
 
   def deleteSpend(sp:Spend, count:Int): JsCmd = {
     val dailySpend:Either[MongoError, Option[DailySpend]] = on("sanj.dailyspend").findOne[DailySpend]("date", currentDateAsTime)

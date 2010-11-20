@@ -1,6 +1,7 @@
 $(document).ready(function() {
     $('#enabled').hide();
-    $('#description').focus();
+    $('#edit_button').hide();
+    $('#save_button').show();
 });
 
 function delete_spend(rowName) {
@@ -25,4 +26,28 @@ function delete_spend(rowName) {
 
 function show_ajax_error(id, message) {
  $('#'+id).fadeIn().text(message);
+}
+
+function update_form_for_edit(description, cost, label) {
+
+  setHiddenFormValues();
+  setUserFormValues();
+  showEditButton();
+
+  function setHiddenFormValues() {
+      $('#odescription').val(description);
+      $('#ocost').val(cost);
+      $('#olabel').val(label);
+  }
+
+  function setUserFormValues() {
+      $('#description').text(description);
+      $('#cost').val(cost);
+      $('#label').val(label);
+  }
+
+  function showEditButton() {
+      $('#save_button').hide();
+      $('#edit_button').show();
+  }
 }
