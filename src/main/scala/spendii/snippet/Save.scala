@@ -17,6 +17,7 @@ import spendii.mongo.MongoTypes._
 import spendii.snippet.LiftWithEase._
 import spendii.model.TemplateKeys.SaveSpendFormLabels._
 import net.liftweb.http.js.JsCmds._
+import spendii.validate.FailureCollector
 
 class Save extends Loggable {
 
@@ -57,16 +58,25 @@ class Save extends Loggable {
   private def cantFindExpenditure: String = "Could not find expenditure for " +  currentDateAsString
 
   private def saveSpend {
-    if (parametersAreValid) {
-      val col = MongoBoot.getDailySpend(user)
-      var found = col.findOne[DailySpend]("date", currentDateAsTime)
-      found match {
-        case Left(me) => error(me)
-        case Right(Some(ds)) => saveDailySpend(col, ds.add(Spend(description, cost.toDouble, label)))
-        case Right(None) => saveDailySpend(col, createNewSpend)
-      }
-    } else {
-      error(form_error, "There are form errors")
+    import spendii.validate.Validator._
+    new FailureCollector().collect(label, () => error(label_error, "Please enter a label.")).
+            collect(description, () => error(description_error, "Please enter a description.")).
+            collect(cost, () => error(cost_error, "Please enter a numeric cost."), checkForNegatives(_:String))(StringToDoubleValidator).
+            onSuccess(() => performSave)
+  }
+
+  private def checkForNegatives = (value:String) =>
+    new FailureCollector().collect(value.toDouble, () => error(cost_error, "Please enter a cost greater than $0.")).validateAll
+
+  private def performSave {
+    val col = MongoBoot.getDailySpend(user)
+    //change this to use the atomic update method
+    //col.update("date" -> currentDateAsTime, col.put[DailySpend](ds), true /* upsert*/, false /* multi*/)
+    var found = col.findOne[DailySpend]("date", currentDateAsTime)
+    found match {
+      case Left(me) => error(me)
+      case Right(Some(ds)) => saveDailySpend(col, ds.add(Spend(description, cost.toDouble, label)))
+      case Right(None) => saveDailySpend(col, createNewSpend)
     }
   }
 
@@ -79,6 +89,7 @@ class Save extends Loggable {
   def isLabelValid: Boolean = !label.trim.isEmpty
 
   def parametersAreValid: Boolean = {
+
     val validLabel = !label.trim.isEmpty
     val validCost = isNumber(cost)
     val validDescription = !description.trim.isEmpty
