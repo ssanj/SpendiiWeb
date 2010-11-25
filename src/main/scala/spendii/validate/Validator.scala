@@ -4,23 +4,27 @@
  */
 package spendii.validate
 
-import collection.mutable.ListBuffer
+import ValidatorTypes._
+
+object ValidatorTypes {
+  type AnyFunc = () => Any
+}
 
 trait Validator[T] {
-  def validate(value:T, f:() => Any): Option[() => Any]
+  def validate(value:T, f:AnyFunc): Option[AnyFunc]
 }
 
 object Validator {
   implicit object EmptyStringValidator extends Validator[String] {
-    def validate(value:String, f:() => Any): Option[() => Any] = if (value.trim.isEmpty) Some(f) else None
+    def validate(value:String, f:() => Any): Option[AnyFunc] = if (value.trim.isEmpty) Some(f) else None
   }
 
   implicit object PositiveNonZeroDoubleValidator extends Validator[Double] {
-    def validate(value:Double, f:() => Any): Option[() => Any] = if (value <= 0.0D) Some(f) else None
+    def validate(value:Double, f:() => Any): Option[AnyFunc] = if (value <= 0.0D) Some(f) else None
   }
 
   object StringToDoubleValidator extends Validator[String] {
-    def validate(value:String, f:() => Any): Option[() => Any] = {
+    def validate(value:String, f:() => Any): Option[AnyFunc] = {
       try {
         value.toDouble
         None
@@ -29,28 +33,31 @@ object Validator {
   }
 }
 
-final class FailureCollector {
+final class FailureCollector[+P](failures:Seq[Option[AnyFunc]] = Seq[Option[AnyFunc]](), previous:Option[P] = None) {
 
-  val buffer = ListBuffer[Option[() => Any]]()
-
-  def collect[V](value:V, f:() => Any) (implicit validator:Validator[V]): FailureCollector = {
-    buffer += validator.validate(value, f)
-    this
-  }
-
-  def collect[V](value:V, e:() => Any, s:(V) => Any) (implicit validator:Validator[V]): FailureCollector = {
-    val result:Option[() => Any] = validator.validate(value, e)
-    buffer += result
-    if (result.isEmpty) s(value) else {}
-    this
-  }
-
-  def onSuccess(f2:() => Any) {
-    buffer.toSeq.flatten match {
-      case Nil => f2()
-      case xs => xs.foreach(_.apply)
+  def collect[V](value:V, f:AnyFunc) (implicit validator:Validator[V]): FailureCollector[V] = {
+    validator.validate(value, f) match {
+      case Some(error) => new FailureCollector[V](failures :+ Some(error))
+      case None => new FailureCollector[V](failures, Some(value))
     }
   }
 
-  def validateAll { buffer.toSeq.flatten.foreach(_.apply) }
+  def and[V](p:(P) => V, f:AnyFunc)(implicit validator:Validator[V]): FailureCollector[V] = {
+    previous match {
+      case Some(success:P) => collect[V](p(success), f)(validator)
+      case None => new FailureCollector[V](failures)
+    }
+  }
+
+  def onSuccess(f:AnyFunc) { fold(() => {}, f) }
+
+  def fold(error:AnyFunc, success:AnyFunc) {
+    failures.flatten match {
+      case Nil => success()
+      case xs => {
+            xs.foreach(_.apply)
+            error()
+      }
+    }
+  }
 }
