@@ -59,16 +59,14 @@ class Save extends Loggable {
 
   private def saveSpend {
     import spendii.validate.Validator._
-//    new FailureCollector().collect(label, () => error(label_error, "Please enter a label.")).
-//            collect(description, () => error(description_error, "Please enter a description.")).
-//            collect(cost, () => error(cost_error, "Please enter a numeric cost."), checkForNegatives(_:String))(StringToDoubleValidator).
-//            onSuccess(() => performSave)
-    performSave
+    new FailureCollector().
+            collect(label, () => error(label_error, "Please enter a label.")).
+            collect(description, () => error(description_error, "Please enter a description.")).
+            collect(cost, () => error(cost_error, "Please enter a numeric cost."))(StringToDoubleValidator).
+              and(_.toDouble, () => error(cost_error, "Please enter a cost greater than $0.")).
+            fold(() => error(form_error, "There are form errors"),() => performSave)
   }
 
-//  private def checkForNegatives = (value:String) =>
-//    new FailureCollector().collect(value.toDouble, () => error(cost_error, "Please enter a cost greater than $0.")).validateAll
-//
   private def performSave {
     val col = MongoBoot.getDailySpend(user)
     //change this to use the atomic update method
