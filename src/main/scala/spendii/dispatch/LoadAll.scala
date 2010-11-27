@@ -19,7 +19,7 @@ object LoadAll extends DispatchSnippet {
   }
 
   private def loadAll(xhtml:NodeSeq): NodeSeq = {
-    val dailySpends:Either[MongoError, Seq[DailySpend]] = on("sanj.dailyspend").find[DailySpend](Map.empty)
+    val dailySpends:Either[MongoError, Seq[DailySpend]] = getDailySpend("sanj").find[DailySpend](Map.empty)
     dailySpends match {
       case Right(Nil) => displayNoSpends
       case Right(seqOfDailySpends) =>
