@@ -56,7 +56,7 @@ class Load extends Loggable {
     dailySpend match {
       case Right(Some(ds)) => {
         val col = getDailySpend(user)
-        col.save(col.put[DailySpend](ds.remove(sp))).
+        col.save(ds.remove(sp)).
           fold(ex => callErrorFunc(ex.message), r => JE.Call("delete_spend", Str("sp" + count)))
       }
       case Right(None) => callErrorFunc("Could not find expenditure for " + currentDateAsString)

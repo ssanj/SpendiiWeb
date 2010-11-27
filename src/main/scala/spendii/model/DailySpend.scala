@@ -4,10 +4,15 @@
  */
 package spendii.model
 
-import spendii.mongo.MongoTypes.{MongoObjectId}
 import collection.mutable.ListBuffer
+import spendii.mongo.MongoTypes.{MongoObject, MongoObjectId}
 
 case class Spend(val description:String, val cost:Double, val label:String)
+
+object Spend {
+  import MongoConverter._
+  implicit def spendToMongo(sp:Spend): MongoObject = SpendConverter.convert(sp)
+}
 
 case class DailySpend(val id:Option[MongoObjectId], val date:Long, val spends:Seq[Spend]) {
 

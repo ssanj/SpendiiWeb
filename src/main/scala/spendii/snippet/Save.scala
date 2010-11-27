@@ -14,10 +14,10 @@ import com.mongodb.{DBCollection, DBObject, BasicDBObject}
 import spendii.model.Common._
 import spendii.model.{Spend, DailySpend}
 import spendii.mongo.MongoTypes._
+import spendii.mongo.MongoTypes.MongoObject._
 import spendii.snippet.LiftWithEase._
 import spendii.model.TemplateKeys.SaveSpendFormLabels._
 import net.liftweb.http.js.JsCmds._
-import spendii.validate.FailureCollector
 import spendii.validate.FailureCollector._
 
 class Save extends Loggable {
@@ -78,21 +78,19 @@ class Save extends Loggable {
 
   private def performSave() {
     val col = MongoBoot.getDailySpend(user)
-    //change this to use the atomic update method
-    //col.update("date" -> currentDateAsTime, col.put[DailySpend](ds), true /* upsert*/, false /* multi*/)
-    var found = col.findOne[DailySpend]("date", currentDateAsTime)
-    found match {
-      case Left(me) => error(me)
-      case Right(Some(ds)) => saveDailySpend(col, ds.add(Spend(description, cost.toDouble, label)))
-      case Right(None) => saveDailySpend(col, createNewSpend)
+    col.update("date" -> currentDateAsTime, push("spends", Spend(description, cost.toDouble, label)), true) match {
+      case Left(me:MongoError) => error(me)
+      case Right(_) =>  notice("Saved Spend")
     }
   }
 
   private def saveDailySpend(col:MongoCollection, ds:DailySpend) {
-    col.save(col.put[DailySpend](ds)).fold(me => error(me), r => notice("Saved Spend"))
+    import spendii.model.MongoConverter._
+    col.save(ds).fold(me => error(me), r => notice("Saved Spend"))
   }
 
-  private def createNewSpend: DailySpend =  DailySpend(None, currentDateAsTime, List(Spend(description, cost.toDouble, label)))
+
+  private def updateSpend(ds:DailySpend): DailySpend = ds.add(Spend(description, cost.toDouble, label))
 
   private def displayErrorAndStay(me:MongoError): NodeSeq = {
     displayError(me)

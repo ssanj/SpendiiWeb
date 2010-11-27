@@ -77,6 +77,8 @@ object MongoTypes {
 
     def put(key:String, value:Any) { dbo.put(key, value.asInstanceOf[AnyRef]) }
 
+    def putMongo(key:String, mongo:MongoObject) { dbo.put(key, mongo.toDBObject.asInstanceOf[AnyRef]) }
+
     def putId(id:MongoObjectId) { dbo.put("_id", id.toObjectId) }
 
     def putArray(key:String, values:Seq[MongoObject]) {
@@ -90,6 +92,20 @@ object MongoTypes {
 
   object MongoObject {
     implicit def dbObjectToMongoObject(dbo:DBObject): MongoObject = MongoObject(dbo)
+
+    implicit def tuple2ToMongoObject(tuple2:Tuple2[String, Any]): MongoObject = {
+      val mo = MongoObject(new BasicDBObject)
+      mo.put(tuple2._1, tuple2._2)
+      mo
+    }
+
+    def push(key:String, value:MongoObject): MongoObject = {
+      val parent = MongoObject(new BasicDBObject)
+      val element = MongoObject(new BasicDBObject)
+      element.putMongo(key, value)
+      parent.putMongo("$push", element)
+      parent
+    }
   }
 
   case class MongoCursor(private val dbc:DBCursor) {
@@ -132,14 +148,23 @@ object MongoTypes {
       }
     }
 
-    //rename this to something like createMongoObject
-    def put[T](value:T)(implicit con:MongoConverter[T]): MongoObject =  con.convert(value)
-
     def save(mo:MongoObject): Either[MongoError, Unit] = {
       import MongoWriteResult._
       dbc.save(mo.toDBObject).getMongoError match {
         case None => Right()
         case Some(me) => Left(me)
+      }
+    }
+
+    def save[T](value:T)(implicit mc:MongoConverter[T]): Either[MongoError, Unit] =  save(mc.convert(value))
+
+    def update[T](query:MongoObject, upate:MongoObject, upsert:Boolean):Either[MongoError, Unit] = {
+      import MongoWriteResult._
+      wrapWith {
+        dbc.update(query.toDBObject, upate.toDBObject, upsert, false)
+      } match {
+        case Right(result) => result.getMongoError match { case None => Right();  case Some(me) => Left(me) }
+        case Left(me) => Left(me)
       }
     }
 
