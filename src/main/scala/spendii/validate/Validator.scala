@@ -45,7 +45,7 @@ object Validator {
  *
  * <P> Defines the type of the stored previous success value.
  */
-final class FailureCollector[+P](failures:Seq[Option[AnyFunc]] = Seq[Option[AnyFunc]](), previous:Option[P] = None) {
+final class FailureCollector[+P] private[validate] (failures:Seq[Option[AnyFunc]] = Seq[Option[AnyFunc]](), previous:Option[P] = None) {
 
   /**
    * Collects any errors for the supplied value of type V and registers the function f, against that error. The function f is not
@@ -100,4 +100,8 @@ final class FailureCollector[+P](failures:Seq[Option[AnyFunc]] = Seq[Option[AnyF
       }
     }
   }
+}
+
+object FailureCollector {
+  def failure = new FailureCollector[Nothing]()
 }

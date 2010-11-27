@@ -18,6 +18,7 @@ import spendii.snippet.LiftWithEase._
 import spendii.model.TemplateKeys.SaveSpendFormLabels._
 import net.liftweb.http.js.JsCmds._
 import spendii.validate.FailureCollector
+import spendii.validate.FailureCollector._
 
 class Save extends Loggable {
 
@@ -59,8 +60,7 @@ class Save extends Loggable {
 
   private def saveSpend {
     import spendii.validate.Validator._
-    new FailureCollector().
-            collect(label, emptyLabelError).
+    failure.collect(label, emptyLabelError).
             collect(description, emptyDescriptionError).
             collect(cost, nonNumericCostError)(StringToDoubleValidator).and(_.toDouble, nonPositiveCostError).
             fold(formErrors, performSave)
@@ -93,38 +93,6 @@ class Save extends Loggable {
   }
 
   private def createNewSpend: DailySpend =  DailySpend(None, currentDateAsTime, List(Spend(description, cost.toDouble, label)))
-
-  def isLabelValid: Boolean = !label.trim.isEmpty
-
-  def parametersAreValid: Boolean = {
-
-    val validLabel = !label.trim.isEmpty
-    val validCost = isNumber(cost)
-    val validDescription = !description.trim.isEmpty
-
-    if (!validLabel){
-      error(label_error, "Please enter a label.")
-    }
-
-    if (!validCost) {
-      error(cost_error, "Please enter a numeric cost.")
-    }
-
-    if (!validDescription) {
-      error(description_error, "Please enter a description.")
-    }
-
-    validLabel && validCost && validDescription
-  }
-
-  private def isNumber(value:String): Boolean = {
-    try {
-      value.toDouble
-      true
-    } catch {
-      case _ => false
-    }
-  }
 
   private def displayErrorAndStay(me:MongoError): NodeSeq = {
     displayError(me)
