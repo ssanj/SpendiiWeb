@@ -62,9 +62,9 @@ class Save extends Loggable {
     import spendii.validate.Validator._
     import spendii.validate.ValidatorTypes._
     validator.validate(label, emptyLabelError).
-            validate(description, emptyDescriptionError).
-            validate(StringToDouble(cost), nonNumericCostError).andThen(_.value.toDouble, nonPositiveCostError).
-            fold(formErrors, performSave)
+              validate(description, emptyDescriptionError).
+              validate(StringToDouble(cost), nonNumericCostError).andThen(_.value.toDouble, nonPositiveCostError).
+              fold(formErrors, performSave)
   }
 
   private def emptyLabelError() { error(label_error, "Please enter a label.") }

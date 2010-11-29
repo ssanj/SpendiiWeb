@@ -58,8 +58,9 @@ object MongoTypes {
   }
 
   case class MongoObject(dbo:DBObject) {
-
     def this() = this(new BasicDBObject)
+
+    def this(tuples:Tuple2[String, Any]*) = this(new BasicDBObject(scala.collection.JavaConversions.asMap(tuples.toMap)))
 
     def get[T](key:String)(implicit con:AnyRefConverter[T]): T = con.convert(dbo.get(key))
 
@@ -94,18 +95,20 @@ object MongoTypes {
     implicit def dbObjectToMongoObject(dbo:DBObject): MongoObject = MongoObject(dbo)
 
     implicit def tuple2ToMongoObject(tuple2:Tuple2[String, Any]): MongoObject = {
-      val mo = MongoObject(new BasicDBObject)
+      val mo = new MongoObject
       mo.put(tuple2._1, tuple2._2)
       mo
     }
 
     def push(key:String, value:MongoObject): MongoObject = {
-      val parent = MongoObject(new BasicDBObject)
-      val element = MongoObject(new BasicDBObject)
+      val parent = new MongoObject
+      val element = new MongoObject
       element.putMongo(key, value)
       parent.putMongo("$push", element)
       parent
     }
+
+    def query = new MongoObject(_:Tuple2[String, Any])
   }
 
   case class MongoCursor(private val dbc:DBCursor) {
