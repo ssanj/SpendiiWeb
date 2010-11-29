@@ -8,49 +8,49 @@ import org.scalatest.matchers.ShouldMatchers
 import collection.mutable.ListBuffer
 import org.scalatest.FunSuite
 import spendii.validate.Validator._
-import spendii.validate.FailureCollector._
+import spendii.validate.ValidationStatus._
 import spendii.validate.ValidatorTypes.StringToDouble
 
-final class FailureCollectorWithAndSuite extends FunSuite with ShouldMatchers {
+final class ValidationStatusWithAndThenSuite extends FunSuite with ShouldMatchers {
 
-  test("A FailureCollector can and validations to success") {
+  test("A ValidationStatus can andThen validations to success") {
     val buffer = ListBuffer[String]()
-    failure.collect(StringToDouble("5.0"), () => buffer += "fail1").
-                            and(_.value.toDouble, () => buffer += "fail2").
-                            collect("rara", () => buffer += "fail3").
+    validator.validate(StringToDouble("5.0"), () => buffer += "fail1").
+                            andThen(_.value.toDouble, () => buffer += "fail2").
+                            validate("rara", () => buffer += "fail3").
                             onSuccess(() => buffer+= "success")
     buffer.size should equal (1)
     buffer.head should equal ("success")
   }
 
-  test("A FailureCollector can and validations to failure") {
+  test("A ValidationStatus can andThen validations to failure") {
     val buffer = ListBuffer[String]()
-    failure.collect(StringToDouble("-6.0"), () => buffer += "fail1").
-                            and(_.value.toDouble, () => buffer += "fail2").
-                            collect("", () => buffer += "fail3").
+    validator.validate(StringToDouble("-6.0"), () => buffer += "fail1").
+                            andThen(_.value.toDouble, () => buffer += "fail2").
+                            validate("", () => buffer += "fail3").
                             onSuccess(() => buffer+= "success")
     buffer.size should equal (2)
     buffer.head should equal ("fail2")
     buffer.tail.head should equal ("fail3")
   }
 
-  test("A FailureCollector should not run and validations if the first collect fails") {
+  test("A ValidationStatus should not run andThen validations if the first collect fails") {
     val buffer = ListBuffer[String]()
-    failure.collect(StringToDouble("ABC"), () => buffer += "fail1").
-                            and(_.value.toDouble, () => buffer += "fail2").
-                            collect("", () => buffer += "fail3").
+    validator.validate(StringToDouble("ABC"), () => buffer += "fail1").
+                            andThen(_.value.toDouble, () => buffer += "fail2").
+                            validate("", () => buffer += "fail3").
                             onSuccess(() => buffer+= "success")
     buffer.size should equal (2)
     buffer.head should equal ("fail1")
     buffer.tail.head should equal ("fail3")
   }
 
-  test("A FailureCollector should not propagate chain if one of the and validators fails") {
+  test("A ValidationStatus should not continue to call andThens if one of the andThen validators fails") {
     val buffer = ListBuffer[String]()
-    failure.collect("ABC", () => buffer += "fail1").
-                            and(identity, () => buffer += "fail2")(ShouldHaveZedValidator).
-                            and(identity, () => buffer += "fail3")(ShouldHaveFourCharsValidator).
-                            collect(StringToDouble("blurb"), () => buffer += "fail4").
+    validator.validate("ABC", () => buffer += "fail1").
+                            andThen(identity, () => buffer += "fail2")(ShouldHaveZedValidator).
+                            andThen(identity, () => buffer += "fail3")(ShouldHaveFourCharsValidator).
+                            validate(StringToDouble("blurb"), () => buffer += "fail4").
                           onSuccess(() => buffer += "success")
     buffer.size should equal (2)
     buffer.head should equal ("fail2")

@@ -18,7 +18,7 @@ import spendii.mongo.MongoTypes.MongoObject._
 import spendii.snippet.LiftWithEase._
 import spendii.model.TemplateKeys.SaveSpendFormLabels._
 import net.liftweb.http.js.JsCmds._
-import spendii.validate.FailureCollector._
+import spendii.validate.ValidationStatus._
 
 class Save extends Loggable {
 
@@ -61,9 +61,9 @@ class Save extends Loggable {
   private def saveSpend {
     import spendii.validate.Validator._
     import spendii.validate.ValidatorTypes._
-    failure.collect(label, emptyLabelError).
-            collect(description, emptyDescriptionError).
-            collect(StringToDouble(cost), nonNumericCostError).and(_.value.toDouble, nonPositiveCostError).
+    validator.validate(label, emptyLabelError).
+            validate(description, emptyDescriptionError).
+            validate(StringToDouble(cost), nonNumericCostError).andThen(_.value.toDouble, nonPositiveCostError).
             fold(formErrors, performSave)
   }
 

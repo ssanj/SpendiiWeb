@@ -7,15 +7,15 @@ package spendii.validate
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.FunSuite
 import spendii.validate.Validator._
-import spendii.validate.FailureCollector._
+import spendii.validate.ValidationStatus._
 import collection.mutable.ListBuffer
 
-final class FailureCollectorSuite extends FunSuite with ShouldMatchers {
+final class ValidationStatusSuite extends FunSuite with ShouldMatchers {
 
-  test("A FailureCollector should add new failures to previous failures") {
+  test("A ValidationStatus should add new failures to previous failures") {
     val buffer = ListBuffer[String]()
     val failure = Failure(Seq(Some(() => buffer += "fail1")))
-    failure.collect("", () => buffer += "fail2") match {
+    failure.validate("", () => buffer += "fail2") match {
       case Success(_, _) => fail("expected Failure")
       case Failure(failures) => {
         failures.size should equal (2)
@@ -27,10 +27,10 @@ final class FailureCollectorSuite extends FunSuite with ShouldMatchers {
     }
   }
 
-  test("A FailureCollector should have a previous value on success and retain failures") {
+  test("A ValidationStatus should have a previous value on success and retain failures") {
     val buffer = ListBuffer[String]()
     val failure = Failure(Seq(Some(() => buffer += "fail1")))
-    failure.collect("Blah", () => {}) match {
+    failure.validate("Blah", () => {}) match {
       case Success(failures, prev) => {
         failures.size should equal (1)
         failures.flatten.foreach(_.apply)
@@ -42,9 +42,9 @@ final class FailureCollectorSuite extends FunSuite with ShouldMatchers {
     }
   }
 
-  test("A FailureCollector should have a retain failures across a Success") {
+  test("A ValidationStatus should have a retain failures across a Success") {
     val buffer = ListBuffer[String]()
-    Success(previous="ABC").collect("", () => buffer += "fail1") match {
+    Success(previous="ABC").validate("", () => buffer += "fail1") match {
       case Success(_, _) => fail("expected Success")
       case Failure(failures) => {
         failures.size should equal (1)
@@ -55,8 +55,8 @@ final class FailureCollectorSuite extends FunSuite with ShouldMatchers {
     }
   }
 
-  test("A FailureCollector should have a the current value on multiple successes") {
-    Success(previous="ABC").collect(5D, () => {}) match {
+  test("A ValidationStatus should have a the current value on multiple successes") {
+    Success(previous="ABC").validate(5D, () => {}) match {
       case Success(_, prev) => prev should equal (5D)
       case Failure(_) => fail("expected Success")
     }
