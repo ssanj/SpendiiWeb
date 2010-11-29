@@ -5,10 +5,12 @@
 package spendii.validate
 
 import ValidatorTypes._
+import spendii.validate.FailureCollector._
 
 object ValidatorTypes {
   type AnyFunc = () => Any
 
+  //Hint for type class resolution of Strings that need to be converted to Doubles.
   final case class StringToDouble(val value:String)
 }
 
@@ -42,42 +44,37 @@ object Validator {
 }
 
 /**
- * Class that collects successes and failures. Maybe the name is a misnomer.
+ * Class that collects validation successes and failures. Maybe the name is a misnomer.
  * A FailureCollector stores the previous success value (if any) and previous failures (if any).
  *
  * <P> Defines the type of the stored previous success value.
  */
-final class FailureCollector[+P] private[validate] (failures:Seq[Option[AnyFunc]] = Seq[Option[AnyFunc]](), previous:Option[P] = None) {
+sealed abstract class FailureCollector[+P] private[validate] (failures:Seq[Option[AnyFunc]], previous:Option[P]) {
 
   /**
    * Collects any errors for the supplied value of type V and registers the function f, against that error. The function f is not
    * executed at this time. An implicit/supplied Validator of type V is matched/provided for the value supplied.
    *
    * If the value V fails the supplied Validator, the failure is registered with the function f along with any existing errors
-   * in new FailureCollector without a previous success.
-   * If the value V passes the supplied Validator, the success is stored along with any existing errors in a new FailureCollector.
+   * in a new Failure.
+   * If the value V passes the supplied Validator, the success is stored along with any existing errors in a new Success.
    */
   def collect[V](value:V, f:AnyFunc) (implicit validator:Validator[V]): FailureCollector[V] = {
     validator.validate(value, f) match {
-      case Some(error) => new FailureCollector[Nothing](failures :+ Some(error))
-      case None => new FailureCollector[V](failures, Some(value))
+      case Some(error) => new Failure(failures :+ Some(error))
+      case None => new Success[V](failures, value)
     }
   }
 
   /**
    * Call this method following a previous invocation to collect.
    *
-   * If the current FailureCollector has a previous success of type P, the function
-   * p(success) => V is executed to provide a value of type V for validation as per the collect method.
+   * If the current FailureCollector is a Success, the function  p(success) => V is executed to provide a value of type V for validation
+   * as per the collect method.
    *
-   * If the current FailureCollector has a previous success of None, the current FailureCollector is returned.
+   * If the current FailureCollector is a Failure a new Failure is returned.
    */
-  def and[V](p:(P) => V, f:AnyFunc)(implicit validator:Validator[V]): FailureCollector[V] = {
-    previous match {
-      case Some(success) => collect[V](p(success), f)(validator)
-      case None => new FailureCollector[Nothing](failures)
-    }
-  }
+  def and[V](p:(P) => V, f:AnyFunc)(implicit validator:Validator[V]): FailureCollector[V]
 
   /**
    * Call this function once ready to run all supplied functions for each error.
@@ -104,6 +101,27 @@ final class FailureCollector[+P] private[validate] (failures:Seq[Option[AnyFunc]
   }
 }
 
+/**
+ * Success models a successful validation. It has previous failures from validations as well as the successfully validated value in previous.
+ *
+ * Calling and will transform the previous value into a value V, which can be validated.
+ */
+final case class Success[+P](failures:Seq[Option[AnyFunc]] = Seq[Option[AnyFunc]](), previous:P)
+        extends FailureCollector[P](failures, Some(previous)) {
+
+  def and[V](p:(P) => V, f:AnyFunc)(implicit validator:Validator[V]): FailureCollector[V] = collect[V](p(previous), f)(validator)
+}
+
+/**
+ * Models a failed validation. It has previous failures from validations.
+ *
+ * Calling and will return another instance of this class.
+ */
+final case class Failure[Nothing](failures:Seq[Option[AnyFunc]] = Seq[Option[AnyFunc]]()) extends FailureCollector[Nothing](failures, None) {
+
+  def and[V](p:(Nothing) => V, f:AnyFunc)(implicit validator:Validator[V]): FailureCollector[V] = new Failure(failures)
+}
+
 object FailureCollector {
-  def failure = new FailureCollector[Nothing]()
+  def failure = Failure()
 }
