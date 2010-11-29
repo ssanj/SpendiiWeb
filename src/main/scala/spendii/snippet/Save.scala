@@ -60,9 +60,10 @@ class Save extends Loggable {
 
   private def saveSpend {
     import spendii.validate.Validator._
+    import spendii.validate.ValidatorTypes._
     failure.collect(label, emptyLabelError).
             collect(description, emptyDescriptionError).
-            collect(cost, nonNumericCostError)(StringToDoubleValidator).and(_.toDouble, nonPositiveCostError).
+            collect(StringToDouble(cost), nonNumericCostError).and(_.value.toDouble, nonPositiveCostError).
             fold(formErrors, performSave)
   }
 

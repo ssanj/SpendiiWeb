@@ -8,13 +8,14 @@ import org.scalatest.matchers.ShouldMatchers
 import collection.mutable.ListBuffer
 import org.scalatest.FunSuite
 import spendii.validate.Validator._
+import spendii.validate.ValidatorTypes.StringToDouble
 
 final class FailureCollectorWithAndSuite extends FunSuite with ShouldMatchers {
 
   test("A FailureCollector can chain validations to success") {
     val buffer = ListBuffer[String]()
-    new FailureCollector().collect("5.0", () => buffer += "fail1")(StringToDoubleValidator).
-                            and(_.toDouble, () => buffer += "fail2").
+    new FailureCollector().collect(StringToDouble("5.0"), () => buffer += "fail1").
+                            and(_.value.toDouble, () => buffer += "fail2").
                             collect("rara", () => buffer += "fail3").
                             onSuccess(() => buffer+= "success")
     buffer.size should equal (1)
@@ -23,8 +24,8 @@ final class FailureCollectorWithAndSuite extends FunSuite with ShouldMatchers {
 
   test("A FailureCollector can chain validations to failure") {
     val buffer = ListBuffer[String]()
-    new FailureCollector().collect("-6.0", () => buffer += "fail1")(StringToDoubleValidator).
-                            and(_.toDouble, () => buffer += "fail2").
+    new FailureCollector().collect(StringToDouble("-6.0"), () => buffer += "fail1").
+                            and(_.value.toDouble, () => buffer += "fail2").
                             collect("", () => buffer += "fail3").
                             onSuccess(() => buffer+= "success")
     buffer.size should equal (2)
@@ -34,8 +35,8 @@ final class FailureCollectorWithAndSuite extends FunSuite with ShouldMatchers {
 
   test("A FailureCollector should not chain validations if the first collect link fails") {
     val buffer = ListBuffer[String]()
-    new FailureCollector().collect("ABC", () => buffer += "fail1")(StringToDoubleValidator).
-                            and(_.toDouble, () => buffer += "fail2").
+    new FailureCollector().collect(StringToDouble("ABC"), () => buffer += "fail1").
+                            and(_.value.toDouble, () => buffer += "fail2").
                             collect("", () => buffer += "fail3").
                             onSuccess(() => buffer+= "success")
     buffer.size should equal (2)
@@ -45,8 +46,8 @@ final class FailureCollectorWithAndSuite extends FunSuite with ShouldMatchers {
 
   test("A FailureCollector should handle multiple chain validations") {
     val buffer = ListBuffer[String]()
-    new FailureCollector().collect("ABC", () => buffer += "fail1")(StringToDoubleValidator).
-                            and(_.toDouble, () => buffer += "fail2").
+    new FailureCollector().collect(StringToDouble("ABC"), () => buffer += "fail1").
+                            and(_.value.toDouble, () => buffer += "fail2").
                             collect("", () => buffer += "fail3").
                             collect("abc", () => buffer += "fail4").and(identity, () => buffer += "fail5")(ShouldHaveZedValidator).
                             onSuccess(() => buffer+= "success")
@@ -61,7 +62,7 @@ final class FailureCollectorWithAndSuite extends FunSuite with ShouldMatchers {
     new FailureCollector().collect("ABC", () => buffer += "fail1").
                             and(identity, () => buffer += "fail2")(ShouldHaveZedValidator).
                             and(identity, () => buffer += "fail3")(ShouldHaveFourCharsValidator).
-                            collect("blurb", () => buffer += "fail4")(StringToDoubleValidator).
+                            collect(StringToDouble("blurb"), () => buffer += "fail4").
                           onSuccess(() => buffer += "success")
     buffer.size should equal (2)
     buffer.head should equal ("fail2")

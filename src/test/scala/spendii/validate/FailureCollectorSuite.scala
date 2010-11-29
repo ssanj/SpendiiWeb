@@ -6,8 +6,7 @@ package spendii.validate
 
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.FunSuite
-import spendii.validate.FailureCollector
-import spendii.validate.Validator.{EmptyStringValidator, PositiveNonZeroDoubleValidator, StringToDoubleValidator}
+import spendii.validate.Validator._
 import collection.mutable.ListBuffer
 
 final class FailureCollectorSuite extends FunSuite with ShouldMatchers {

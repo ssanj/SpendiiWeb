@@ -8,6 +8,8 @@ import ValidatorTypes._
 
 object ValidatorTypes {
   type AnyFunc = () => Any
+
+  final case class StringToDouble(val value:String)
 }
 
 /**
@@ -29,10 +31,10 @@ object Validator {
     def validate(value:Double, f:() => Any): Option[AnyFunc] = if (value <= 0.0D) Some(f) else None
   }
 
-  object StringToDoubleValidator extends Validator[String] {
-    def validate(value:String, f:() => Any): Option[AnyFunc] = {
+  implicit object StringToDoubleValidator extends Validator[StringToDouble] {
+    def validate(strValue:StringToDouble, f:() => Any): Option[AnyFunc] = {
       try {
-        value.toDouble
+        strValue.value.toDouble
         None
       } catch { case _ => Some(f) }
     }
