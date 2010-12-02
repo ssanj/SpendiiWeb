@@ -6,11 +6,11 @@ package spendii.model
 
 import collection.mutable.ListBuffer
 import spendii.mongo.MongoTypes.{MongoObject, MongoObjectId}
+import MongoConverter._
 
 case class Spend(val description:String, val cost:Double, val label:String)
 
 object Spend {
-  import MongoConverter._
   implicit def spendToMongo(sp:Spend): MongoObject = SpendConverter.convert(sp)
 }
 
@@ -25,6 +25,10 @@ case class DailySpend(val id:Option[MongoObjectId], val date:Long, val spends:Se
   def total: Double = spends.foldLeft(0D)(_ + _.cost)
 
   def indexedSpends: Seq[IndexedSpend] =  spends.zipWithIndex.map(t => IndexedSpend(t._1, t._2 + 1))
+}
+
+object DailySpend {  
+  implicit def dsToMongo(ds:DailySpend): MongoObject = DailySpendConverter.convert(ds)
 }
 
 case class IndexedSpend(spend:Spend, index:Int)
