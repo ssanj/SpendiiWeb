@@ -8,6 +8,7 @@ import xml.{NodeSeq}
 import bootstrap.liftweb.MongoBoot._
 import spendii.model.Common._
 import spendii.mongo.MongoTypes.MongoError
+import spendii.mongo.MongoTypes.MongoObject._
 import net.liftweb.util.Helpers._
 import net.liftweb.common.{Empty, Failure, Full, Loggable}
 import net.liftweb.http.js.JsCmds._
@@ -52,17 +53,13 @@ class Load extends Loggable {
   def editSpend(sp:Spend, count:Int): JsCmd = JE.Call("update_form_for_edit", Str(sp.description), Str(sp.cost.toString), Str(sp.label))
 
   def deleteSpend(sp:Spend, count:Int): JsCmd = {
-    val dailySpend:Either[MongoError, Option[DailySpend]] = getDailySpend(user).findOne[DailySpend]("date", currentDateAsTime)
-    dailySpend match {
-      case Right(Some(ds)) => {
-        val col = getDailySpend(user)
-        col.save(ds.remove(sp)).
-          fold(ex => callErrorFunc(ex.message), r => JE.Call("delete_spend", Str("sp" + count)))
-      }
-      case Right(None) => callErrorFunc("Could not find expenditure for " + currentDateAsString)
+    getDailySpend(user).update("date" -> currentDateAsTime, pull("spends", sp), false) match {
       case Left(ex) => callErrorFunc(ex.message)
+      case Right(_) => calSuccessFunc("sp" + count)
     }
   }
 
   def callErrorFunc(message:String): JsCmd =  JE.Call("show_ajax_error", Str(load_form_error), Str(message))
+
+  def calSuccessFunc(value:String): JsCmd = JE.Call("delete_spend", Str(value))
 }

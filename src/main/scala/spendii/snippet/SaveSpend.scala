@@ -6,18 +6,16 @@ package spendii.snippet
 
 import bootstrap.liftweb.MongoBoot
 import spendii.model.Common._
-import spendii.model.{Spend, DailySpend}
+import spendii.model.{Spend}
 import spendii.mongo.MongoTypes._
 import spendii.mongo.MongoTypes.MongoObject._
 import spendii.snippet.LiftWithEase._
 import spendii.model.TemplateKeys.SaveSpendFormLabels._
 import spendii.validate.ValidationStatus._
 
-
 trait SaveSpend { this:SaveVariables =>
 
   protected def saveSpend {
-    import spendii.validate.Validator._
     import spendii.validate.ValidatorTypes._
     validator.validate(label, emptyLabelError).
               validate(description, emptyDescriptionError).

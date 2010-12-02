@@ -100,13 +100,18 @@ object MongoTypes {
       mo
     }
 
-    def push(key:String, value:MongoObject): MongoObject = {
+    def push(col:String, value:MongoObject): MongoObject =  arrayFuncs("$push", col, value)
+
+    def pull(col:String, value:MongoObject): MongoObject =  arrayFuncs("$pull", col, value)
+
+    def arrayFuncs(action:String, col:String, value:MongoObject): MongoObject = {
       val parent = new MongoObject
       val element = new MongoObject
-      element.putMongo(key, value)
-      parent.putMongo("$push", element)
+      element.putMongo(col, value)
+      parent.putMongo(action, element)
       parent
     }
+
 
     def query = new MongoObject(_:Tuple2[String, Any])
   }
