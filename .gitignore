@@ -6,3 +6,8 @@ spendii.iml
 spendii.ipr
 spendii.iws
 target/
+Spendii.iml
+designs/home.html~
+designs/spendii-bluefish.bfproject
+out/
+project/sbt_project.iml
