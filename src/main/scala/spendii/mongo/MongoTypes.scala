@@ -100,11 +100,11 @@ object MongoTypes {
       mo
     }
 
-    def push(col:String, value:MongoObject): MongoObject =  arrayFuncs("$push", col, value)
+    def push(col:String, value:MongoObject): MongoObject =  $func("$push", col, value)
 
-    def pull(col:String, value:MongoObject): MongoObject =  arrayFuncs("$pull", col, value)
+    def pull(col:String, value:MongoObject): MongoObject =  $func("$pull", col, value)
 
-    def arrayFuncs(action:String, col:String, value:MongoObject): MongoObject = {
+    def $func(action:String, col:String, value:MongoObject): MongoObject = {
       val parent = new MongoObject
       val element = new MongoObject
       element.putMongo(col, value)
