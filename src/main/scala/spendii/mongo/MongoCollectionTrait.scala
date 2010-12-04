@@ -12,17 +12,17 @@ trait MongoCollectionTrait {
 
   case class MongoCollection(dbc:DBCollection) {
 
-    def findOne[T](key:String, value:Any)(implicit con:MongoConverter[T]): Either[MongoError, Option[T]] = {
-      wrapWithKey{
-        val find = dbc.findOne(new BasicDBObject(key, value))
+    def findOne[T](mo:MongoObject)(implicit con:MongoConverter[T]): Either[MongoError, Option[T]] = {
+      wrapWith{
+        val find = dbc.findOne(mo.toDBObject)
         if (find == null) None else  Some(con.convert(find))
-      }(key)
+      }
     }
 
-    def find[T](q:Map[String, AnyRef])(implicit con:MongoConverter[T]): Either[MongoError, Seq[T]] = {
+    def find[T](mo:MongoObject)(implicit con:MongoConverter[T]): Either[MongoError, Seq[T]] = {
       import scala.collection.JavaConversions._
       wrapWith{
-        val mc:MongoCursor = dbc.find(new BasicDBObject(q))
+        val mc:MongoCursor = dbc.find(mo.toDBObject)
         mc.toSeq[T]
       }
     }

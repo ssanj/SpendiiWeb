@@ -13,9 +13,10 @@ import spendii.mongo.MongoTypes.MongoObjectId
 trait MongoObjectTrait {
 
   case class MongoObject(dbo:DBObject) {
+
     def this() = this(new BasicDBObject)
 
-    def this(tuples:Tuple2[String, Any]*) = this(new BasicDBObject(scala.collection.JavaConversions.asMap(tuples.toMap)))
+    def this(tuples:Seq[Tuple2[String, Any]]) = this(new BasicDBObject(scala.collection.JavaConversions.asMap(tuples.toMap)))
 
     def get[T](key:String)(implicit con:AnyRefConverter[T]): T = con.convert(dbo.get(key))
 
@@ -49,6 +50,8 @@ trait MongoObjectTrait {
   object MongoObject {
     implicit def dbObjectToMongoObject(dbo:DBObject): MongoObject = MongoObject(dbo)
 
+    implicit def MongoObjectToDBObject(mo:MongoObject): DBObject = mo.toDBObject
+
     implicit def tuple2ToMongoObject(tuple2:Tuple2[String, Any]): MongoObject = {
       val mo = new MongoObject
       mo.put(tuple2._1, tuple2._2)
@@ -67,7 +70,8 @@ trait MongoObjectTrait {
       parent
     }
 
+    def empty = new MongoObject
 
-    def query = new MongoObject(_:Tuple2[String, Any])
+    def query(tuples:Tuple2[String, Any]*) = new MongoObject(tuples.toSeq)
   }
 }
