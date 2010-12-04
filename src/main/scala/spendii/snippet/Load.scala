@@ -24,7 +24,7 @@ class Load extends Loggable {
   val user:String = "sanj"
 
   def spends(xhtml:NodeSeq): NodeSeq = {
-    val dailySpend:Either[MongoError, Option[DailySpend]] = getDailySpend(user).findOne[DailySpend]("date", currentDateAsTime)
+    val dailySpend:Either[MongoError, Option[DailySpend]] = getDailySpend(user).findOne[DailySpend]("date" -> currentDateAsTime)
     dailySpend match {
       case Right(Some(ds)) => displaySpends(xhtml, ds)
       case Right(None) => displayNoSpends

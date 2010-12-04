@@ -5,7 +5,7 @@
 package spendii.mongo
 
 import spendii.model.MongoConverter
-import com.mongodb.{BasicDBObject, DBCollection}
+import com.mongodb.{DBCollection}
 import spendii.mongo.MongoTypes._
 
 trait MongoCollectionTrait {
@@ -20,7 +20,6 @@ trait MongoCollectionTrait {
     }
 
     def find[T](mo:MongoObject)(implicit con:MongoConverter[T]): Either[MongoError, Seq[T]] = {
-      import scala.collection.JavaConversions._
       wrapWith{
         val mc:MongoCursor = dbc.find(mo.toDBObject)
         mc.toSeq[T]

@@ -34,16 +34,6 @@ object Common {
 
   def currentDateAsString = formattedDate(currentDateAsTime)
 
-  implicit def displayError(me:MongoError): NodeSeq = {
-    TemplateFinder.findAnyTemplate(List("exception")) match {
-      case Full(xhtml) => bind("exception", xhtml,
-          "context" -> "Could not perform function",
-          "message" -> me.message,
-          "stacktrace" -> me.stackTrace)
-      case _ => <div>The following error occurred : {me.message}. Could not load error template to display additional information.</div>
-    }
-  }
-
   def getError(context:String, me:MongoError): NodeSeq = {
     TemplateFinder.findAnyTemplate(List("exception")) match {
       case Full(xhtml) => bind("exception", xhtml,
