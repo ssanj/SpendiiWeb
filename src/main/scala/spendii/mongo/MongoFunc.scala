@@ -8,7 +8,7 @@ import com.mongodb._
 import spendii.model.{MongoConverter}
 import MongoTypes._
 
-object MongoFunc {
+trait MongoFunc {
 
   def connect(db:String, col:String) : (MongoServer, MongoDatabase, MongoCollection) = {
       val server = new Mongo

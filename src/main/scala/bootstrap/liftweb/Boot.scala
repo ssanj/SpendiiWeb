@@ -6,7 +6,6 @@ package bootstrap.liftweb
 
 import net.liftweb.common.Loggable
 import net.liftweb.sitemap.{Menu, SiteMap}
-import spendii.mongo.MongoFunc._
 import spendii.mongo.MongoTypes._
 import net.liftweb.http.LiftRules
 import spendii.dispatch.LoadAll
