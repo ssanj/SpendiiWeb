@@ -7,12 +7,14 @@ package spendii.mongo
 import com.mongodb.WriteResult
 import MongoTypes._
 
-trait MongoWriteResultTrait {
+trait MongoWriteResultTrait extends WrapWithTrait {
 
   case class MongoWriteResult(wr:WriteResult) {
     def getMongoError: Option[MongoError] = {
-      val error = wr.getError
-      if (error == null) None else Some(MongoError(error, wrapWith(wr.getLastError.getException.getStackTraceString).toString))
+      wrapWith[Option[MongoError]] {
+        val error = wr.getError
+        if (error == null) None else Some(MongoError(error, wr.getLastError.getException.getStackTraceString))
+      }.fold(Some(_), identity)
     }
   }
 
