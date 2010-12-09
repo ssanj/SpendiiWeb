@@ -2,6 +2,8 @@ $(document).ready(function() {
     $('#enabled').hide();
     $('#edit_button').hide();
     $('#save_button').show();
+//    hideSaveFormErrorsIfNoErrrors();
+    hideLoadFormErrorsIfNoErrors();
 });
 
 function delete_spend(rowName) {
@@ -50,4 +52,23 @@ function update_form_for_edit(description, cost, label) {
       $('#save_button').hide();
       $('#edit_button').show();
   }
+}
+
+function hideSaveFormErrorsIfNoErrrors() {
+   hideFormError("save_form_error", "save_form_error_container");
+}
+
+function hideLoadFormErrorsIfNoErrors() {
+    hideFormError("load_form_error", "load_form_error_container");
+}
+
+function hideFormError(spanId, parentId) {
+	var text = $('#' + spanId).text();
+    if (isWhitespaceOrEmpty(text)) {
+		$('#' + parentId).hide();
+    }
+}
+
+function isWhitespaceOrEmpty(text) {
+   return !/[^\s]/.test(text);
 }

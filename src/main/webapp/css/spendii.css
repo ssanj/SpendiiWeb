@@ -86,26 +86,26 @@ form div label {
     text-align: center;
 }
 
-.errorText {
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    border: solid 1px #8b0000;
-}
+/*.errorText {*/
+    /*width: 100%;*/
+    /*margin: 0;*/
+    /*padding: 0;*/
+    /*border: solid 1px #8b0000;*/
+/*}*/
 
-.noticeText {
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    background-color: green;
-    border: solid 1px #006400;
-    color: white;
-    text-align: center;
-}
+/*.noticeText {*/
+    /*width: 100%;*/
+    /*margin: 0;*/
+    /*padding: 0;*/
+    /*background-color: green;*/
+    /*border: solid 1px #006400;*/
+    /*color: white;*/
+    /*text-align: center;*/
+/*}*/
 
-.warningText {
-    color: #db7093;
-}
+/*.warningText {*/
+    /*color: #db7093;*/
+/*}*/
 
 .form {
     margin: 50px 0 100px 0;
