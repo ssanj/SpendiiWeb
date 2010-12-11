@@ -2,7 +2,7 @@ $(document).ready(function() {
     $('#enabled').hide();
     $('#edit_button').hide();
     $('#save_button').show();
-//    hideSaveFormErrorsIfNoErrrors();
+    hideSaveFormErrorsIfNoErrrors();
     hideLoadFormErrorsIfNoErrors();
 });
 
