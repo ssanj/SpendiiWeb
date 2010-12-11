@@ -4,22 +4,36 @@
  */
 package spendii.mongo
 
-import com.mongodb.WriteResult
 import MongoTypes._
+import com.mongodb.{WriteResult}
 
 trait MongoWriteResultTrait extends WrapWithTrait {
 
-  case class MongoWriteResult(wr:WriteResult) {
+  trait WriteResultTrait {
+    def getError: Option[String]
+    def getLastErrorTrace: Option[String]
+  }
+
+  case class MongoWriteResult(wr:WriteResultTrait) {
     def getMongoError: Option[MongoError] = {
       wrapWith[Option[MongoError]] {
-        val error = wr.getError
-        if (error == null) None else Some(MongoError(error, wr.getLastError.getException.getStackTraceString))
+        wr.getError.flatMap(e => wr.getLastErrorTrace.map(t => MongoError(e, t)))
       }.fold(Some(_), identity)
     }
   }
 
   object MongoWriteResult {
-    implicit def writeResultToMongoWriteResult(wr:WriteResult): MongoWriteResult = MongoWriteResult(wr)
+    implicit def writeResultToMongoWriteResult(wr:WriteResult): MongoWriteResult =
+      MongoWriteResult(new WriteResultTrait {
+        def getError = nullToOption(wr.getError)
+        def getLastErrorTrace = {
+          nullToOption(wr.getLastError).flatMap(x => nullToOption(x.getException)).flatMap(y => nullToOption(y.getStackTraceString))
+        }
+      })
   }
 
+  def nullToOption[A](f: => A): Option[A] = {
+    val result = f
+    if (result == null) None else Some(result)
+  }
 }
