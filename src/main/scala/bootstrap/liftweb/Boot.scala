@@ -9,6 +9,7 @@ import net.liftweb.sitemap.{Menu, SiteMap}
 import spendii.mongo.MongoTypes._
 import net.liftweb.http.LiftRules
 import spendii.dispatch.LoadAll
+import net.liftweb.util.Props
 
 class Boot extends Loggable {
 
@@ -23,6 +24,11 @@ class Boot extends Loggable {
       Menu("Load All Spends") / "load-all-dailyspends",
       Menu("Delete") / "delete"))
   }
+}
+
+object BootConfig {
+  //scale used in stored and displayed calculations.
+  val scale = Props.getInt("expenditure.scale", 2)
 }
 
 object MongoBoot extends Loggable {

@@ -6,23 +6,21 @@ $(document).ready(function() {
     hideLoadFormErrorsIfNoErrors();
 });
 
-function delete_spend(rowName) {
+function delete_spend(total, rowName) {
 	var row = '#' + rowName;
  	$(row).animate({'backgroundColor' : 'red'}, 'fast', function() { removeRow($(this)); });
 
    function removeRow(row) {
-   	$(row).fadeOut('fast', function() { updateTotal(row); $(row).remove(); renumber(); });
+   	$(row).fadeOut('fast', function() { updateTotal(); $(row).remove(); renumber(); });
    }
 
-   function updateTotal(row) {
-   	var rowValue = parseFloat($(row).find('td:nth-child(3)').text());
+   function updateTotal() {
     var totalTag = $('span.total');
-   	var oldTotal = parseFloat(totalTag.text().substring(1)); //jump over the $ sign
-   	totalTag.text('$' + (oldTotal - rowValue).toFixed(1));//1 decimal place
+   	totalTag.text('$' + total);//1 decimal place
    }
 
    function renumber() {
-		$('tbody tr').each(function() { $(this).find('td:first').text($(this).index() + 1);	});
+    $('tbody tr').each(function() { $(this).find('td:first').text($(this).index() + 1);	});
    }
 }
 

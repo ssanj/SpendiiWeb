@@ -14,7 +14,8 @@ case class Spend private (val description:String, val cost:Double, val label:Str
 object Spend extends Rounding {
   implicit def spendToMongo(sp:Spend): MongoObject = SpendConverter.convert(sp)
 
-  def createSpend(description:String, cost:Double, label:String): Spend =  Spend(description, roundUp(cost, 2), label)
+  import bootstrap.liftweb.BootConfig._
+  def createSpend(description:String, cost:Double, label:String): Spend =  Spend(description, roundUp(cost, scale), label)
 }
 
 case class DailySpend(val id:Option[MongoObjectId], val date:Long, val spends:Seq[Spend]) {

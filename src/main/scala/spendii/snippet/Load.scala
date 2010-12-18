@@ -18,8 +18,11 @@ import net.liftweb.http.js.{JE, JsCmd}
 import net.liftweb.http.js.JE.{Str, JsRaw}
 import LiftWithEase._
 import spendii.model.TemplateKeys.LoadSpendFormLabels._
+import spendii.common.Rounding
+import bootstrap.liftweb.BootConfig._
 
-class Load extends Loggable {
+//TODO: Split this class up so it can be tested.
+class Load extends Loggable with Rounding {
 
   val user:String = "sanj"
 
@@ -33,7 +36,7 @@ class Load extends Loggable {
   }
   private def displaySpends(xhtml:NodeSeq, ds:DailySpend): NodeSeq = {
       bind("spends", xhtml,
-        "total" -%> <span>${ds.total}</span>,
+        "total" -%> <span>${roundUp(ds.total, scale)}</span>,
         "row" -> displayRowWithDeletes(ds) _)
   }
 
@@ -43,7 +46,7 @@ class Load extends Loggable {
         AttrBindParam("idval", ("sp" + indexSpend.index), "id"),
         "count" -> indexSpend.index.toString,
         "label" -> indexSpend.spend.label,
-        "cost" -%> <span>{indexSpend.spend.cost}</span>,
+        "cost" -%> <span>{roundUp(indexSpend.spend.cost, scale)}</span>,
         "description" -> indexSpend.spend.description,
         "delete" -> SHtml.a(<span class="action">delete</span>)(deleteSpend(indexSpend.spend, indexSpend.index)),
         "edit" -> SHtml.a(<span class="action">edit</span>)(editSpend(indexSpend.spend, indexSpend.index))
@@ -53,13 +56,20 @@ class Load extends Loggable {
   def editSpend(sp:Spend, count:Int): JsCmd = JE.Call("update_form_for_edit", Str(sp.description), Str(sp.cost.toString), Str(sp.label))
 
   def deleteSpend(sp:Spend, count:Int): JsCmd = {
+    //TODO: Refactor this.
     getDailySpend(user).update("date" -> currentDateAsTime, pull("spends", sp), false) match {
       case Left(ex) => callErrorFunc(ex.message)
-      case Right(_) => calSuccessFunc("sp" + count)
+      case Right(_) => {
+        getDailySpend(user).findOne[DailySpend]("date" -> currentDateAsTime) match {
+          case Left(me) =>  callErrorFunc(me.message)
+          case Right(Some(ds)) => calSuccessFunc(roundUp(ds.total, scale), "sp" + count)
+          case Right(None) => callErrorFunc("Could not find expenditure for " + currentDateAsString + ". Aborting deletion.")
+        }
+      }
     }
   }
 
   def callErrorFunc(message:String): JsCmd =  JE.Call("show_ajax_error", Str(load_form_error), Str(message))
 
-  def calSuccessFunc(value:String): JsCmd = JE.Call("delete_spend", Str(value))
+  def calSuccessFunc(total:String, value:String): JsCmd = JE.Call("delete_spend", Str(total), Str(value))
 }
