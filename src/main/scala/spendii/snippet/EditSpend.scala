@@ -14,7 +14,7 @@ trait EditSpend { this:SaveVariables =>
 
   protected def editSpend {
     val col = MongoBoot.getDailySpend(user)
-    var found = col.findOne[DailySpend]("date", currentDateAsTime)
+    val found = col.findOne[DailySpend]("date" -> currentDateAsTime)
     found match {
       case Left(me) => error(getError(cantFindExpenditure, me))
       case Right(Some(ds)) => editDailySpend(col, ds)
@@ -25,7 +25,8 @@ trait EditSpend { this:SaveVariables =>
   private def cantFindExpenditure: String = "Could not find expenditure for " +  currentDateAsString
 
   private def editDailySpend(col:MongoCollection, ds:DailySpend) {
-    col.update(ds, ds.replace(Spend(oDescription, oCost.toDouble, oLabel), Spend(description, cost.toDouble, label)), false) match {
+    import Spend._
+    col.update(ds, ds.replace(createSpend(oDescription, oCost.toDouble, oLabel), createSpend(description, cost.toDouble, label)), false) match {
       case Left(me:MongoError) => error(me)
       case Right(_) =>  notice("Edited Spend")
     }

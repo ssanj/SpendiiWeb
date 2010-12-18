@@ -52,7 +52,8 @@ object MongoConverter {
   implicit object SpendConverter extends MongoConverter[Spend] {
 
     def convert(mgo:MongoObject): Spend = {
-       Spend(mgo.get[String]("description"), mgo.get[Double]("cost"), mgo.get[String]("label"))
+       import Spend._
+       createSpend(mgo.get[String]("description"), mgo.get[Double]("cost"), mgo.get[String]("label"))
      }
 
     def convert(sp:Spend): MongoObject = {

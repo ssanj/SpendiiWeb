@@ -25,7 +25,8 @@ trait SaveSpend { this:SaveVariables =>
 
   private def performSave() {
     val col = MongoBoot.getDailySpend(user)
-    col.update("date" -> currentDateAsTime, push("spends", Spend(description, cost.toDouble, label)), true) match {
+    import Spend._
+    col.update("date" -> currentDateAsTime, push("spends", createSpend(description, cost.toDouble, label)), true) match {
       case Left(me:MongoError) => error(me)
       case Right(_) =>  notice("Saved Spend")
     }

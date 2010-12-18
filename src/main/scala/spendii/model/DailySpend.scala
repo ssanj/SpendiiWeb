@@ -7,11 +7,14 @@ package spendii.model
 import collection.mutable.ListBuffer
 import spendii.mongo.MongoTypes.{MongoObject, MongoObjectId}
 import MongoConverter._
+import spendii.common.Rounding
 
-case class Spend(val description:String, val cost:Double, val label:String)
+case class Spend private (val description:String, val cost:Double, val label:String)
 
-object Spend {
+object Spend extends Rounding {
   implicit def spendToMongo(sp:Spend): MongoObject = SpendConverter.convert(sp)
+
+  def createSpend(description:String, cost:Double, label:String): Spend =  Spend(description, roundUp(cost, 2), label)
 }
 
 case class DailySpend(val id:Option[MongoObjectId], val date:Long, val spends:Seq[Spend]) {
@@ -27,7 +30,7 @@ case class DailySpend(val id:Option[MongoObjectId], val date:Long, val spends:Se
   def indexedSpends: Seq[IndexedSpend] =  spends.zipWithIndex.map(t => IndexedSpend(t._1, t._2 + 1))
 }
 
-object DailySpend {  
+object DailySpend {
   implicit def dsToMongo(ds:DailySpend): MongoObject = DailySpendConverter.convert(ds)
 }
 
