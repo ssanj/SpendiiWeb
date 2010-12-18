@@ -16,7 +16,7 @@ function delete_spend(total, rowName) {
 
    function updateTotal() {
     var totalTag = $('span.total');
-   	totalTag.text('$' + total);//1 decimal place
+    totalTag.fadeOut('fast', function() { $(this).text('$' + total).fadeIn();})
    }
 
    function renumber() {
