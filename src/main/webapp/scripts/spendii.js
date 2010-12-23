@@ -1,12 +1,17 @@
 $(document).ready(function() {
+    init();
+});
+
+function init() {
     $('#enabled').hide();
     $('#edit_button').hide();
     $('#save_button').show();
     hideSaveFormErrorsIfNoErrrors();
     hideLoadFormErrorsIfNoErrors();
-});
+}
 
 function delete_spend(total, rowName) {
+    hideLoadFormErrorsIfNoErrors();
 	var row = '#' + rowName;
  	$(row).animate({'backgroundColor' : 'red'}, 'fast', function() { removeRow($(this)); });
 
@@ -24,7 +29,8 @@ function delete_spend(total, rowName) {
    }
 }
 
-function show_ajax_error(id, message) {
+function show_deletion_error(id, message) {
+ showLoadFormErrors();
  $('#'+id).fadeIn().text(message);
 }
 
@@ -58,6 +64,15 @@ function hideSaveFormErrorsIfNoErrrors() {
 
 function hideLoadFormErrorsIfNoErrors() {
     hideFormError("load_form_error", "load_form_error_container");
+}
+
+function showLoadFormErrors() {
+    $('#load_form_error_container').show();
+}
+
+function resetLoadFormErrors() {
+    $('#load_form_error').text("");
+    $('#load_form_error_container').hide();
 }
 
 function hideFormError(spanId, parentId) {
