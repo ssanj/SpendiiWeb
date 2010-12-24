@@ -1,47 +1,49 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-                    "http://www.w3.org/TR/html4/loose.dtd">
+        "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-  <script type="text/javascript" src="../../../main/webapp/scripts/jquery-1.4.2.min.js"></script>
-  <script type="text/javascript" src="../../../main/webapp/scripts/spendii.js"></script>
-  <link rel="stylesheet" href="qunit.css" type="text/css" media="screen" />
-  <script type="text/javascript" src="qunit.js"></script>
+    <script type="text/javascript" src="../../../main/webapp/scripts/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="../../../main/webapp/scripts/spendii.js"></script>
+    <link rel="stylesheet" href="qunit.css" type="text/css" media="screen"/>
+    <script type="text/javascript" src="qunit.js"></script>
 
-  <script>
-  $(document).ready(function(){
+    <script>
+        $(document).ready(function() {
 
-      test("Should hide error block if there are no errors", function() {
-          equals($('#no_form_error').is(":visible"), true, "error form should be visible");
-          equals($('#no_form_error_container').is(":visible"), true, "error form container should be visible");
-          hideFormError("no_form_error", "no_form_error_container");
-          equals($('#no_form_error').is(":hidden"), true, "error form should be hidden");
-          equals($('#no_form_error_container').is(":hidden"), true, "error form container should be hidden");
-      });
+            test("Should hide error block if there are no errors", function() {
+                equals($('#no_form_error').is(":visible"), true, "error form should be visible");
+                equals($('#no_form_error_container').is(":visible"), true, "error form container should be visible");
+                hideFormError("no_form_error", "no_form_error_container");
+                equals($('#no_form_error').is(":hidden"), true, "error form should be hidden");
+                equals($('#no_form_error_container').is(":hidden"), true, "error form container should be hidden");
+            });
 
-      test("Should show error block if there are errors", function() {
-          equals($('#with_error_form_error').is(":hidden"), false, "error form should be visible");
-          equals($('#with_error_form_error_container').is(":hidden"), false, "error form container should be visible");
-          hideFormError("with_error_form_error", "with_error_form_error_container");
-          equals($('#with_error_form_error').is(":visible"), true, "error form should be visible");
-          equals($('#with_error_form_error').text(), "There was an error!", "Should have expected error message");
-          equals($('#with_error_form_error_container').is(":visible"), true, "error form container should be visible");
-      });
+            test("Should show error block if there are errors", function() {
+                equals($('#with_error_form_error').is(":hidden"), false, "error form should be visible");
+                equals($('#with_error_form_error_container').is(":hidden"), false, "error form container should be visible");
+                hideFormError("with_error_form_error", "with_error_form_error_container");
+                equals($('#with_error_form_error').is(":visible"), true, "error form should be visible");
+                equals($('#with_error_form_error').text(), "There was an error!", "Should have expected error message");
+                equals($('#with_error_form_error_container').is(":visible"), true, "error form container should be visible");
+            });
 
-  });
+        });
 
-  QUnit.done = function() {
-      $('#with_error_form_error').hide();//hide artifact as it affects test suite output.
-  };
-  </script>
+        QUnit.done = function() {
+            $('#with_error_form_error').hide();//hide artifact as it affects test suite output.
+        };
+    </script>
 
 </head>
 <body>
-  <h1 id="qunit-header">Spendii Save Tests</h1>
- <h2 id="qunit-banner"></h2>
- <div id="qunit-testrunner-toolbar"></div>
- <h2 id="qunit-userAgent"></h2>
- <ol id="qunit-tests"></ol>
- <div id="qunit-fixture">test markup, will be hidden</div>
+<h1 id="qunit-header">Spendii Save Tests</h1>
+
+<h2 id="qunit-banner"></h2>
+
+<div id="qunit-testrunner-toolbar"></div>
+<h2 id="qunit-userAgent"></h2>
+<ol id="qunit-tests"></ol>
+<div id="qunit-fixture">test markup, will be hidden</div>
 
 <div id="no_form_error_container">
     <div id="no_form_error">
@@ -49,10 +51,9 @@
     </div>
 </div>
 
-  <div id="with_error_form_error_container">
+<div id="with_error_form_error_container">
     <div id="with_error_form_error">There was an error!</div>
 </div>
-
 
 
 </body>

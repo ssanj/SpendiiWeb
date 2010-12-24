@@ -11,8 +11,8 @@ function init() {
 }
 
 function delete_spend(total, rowName) {
-    hideLoadFormErrorsIfNoErrors();
-	var row = '#' + rowName;
+    $('#load_form_error_container').hide();
+	var row = _id(rowName);
  	$(row).animate({'backgroundColor' : 'red'}, 'fast', function() { removeRow($(this)); });
 
    function removeRow(row) {
@@ -29,9 +29,9 @@ function delete_spend(total, rowName) {
    }
 }
 
-function show_deletion_error(id, message) {
- showLoadFormErrors();
- $('#'+id).fadeIn().text(message);
+function show_deletion_error(message) {
+ showIfHidden('load_form_error_container');
+ $(_id('load_form_error')).fadeIn().text(message);
 }
 
 function update_form_for_edit(description, cost, label) {
@@ -66,8 +66,14 @@ function hideLoadFormErrorsIfNoErrors() {
     hideFormError("load_form_error", "load_form_error_container");
 }
 
-function showLoadFormErrors() {
-    $('#load_form_error_container').show();
+function showIfHidden(id) {
+    var element = $(_id(id));
+    if (element.is(':hidden')){
+        element.show();
+    }
+}
+function _id(id) {
+    return "#"+id;
 }
 
 function resetLoadFormErrors() {
@@ -76,9 +82,9 @@ function resetLoadFormErrors() {
 }
 
 function hideFormError(spanId, parentId) {
-	var text = $('#' + spanId).text();
+	var text = $(_id(spanId)).text();
     if (isWhitespaceOrEmpty(text)) {
-		$('#' + parentId).hide();
+		$(_id(parentId)).hide();
     }
 }
 

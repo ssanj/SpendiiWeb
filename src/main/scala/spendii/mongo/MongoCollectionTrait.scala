@@ -36,13 +36,21 @@ trait MongoCollectionTrait {
 
     def save[T](value:T)(implicit mc:MongoConverter[T]): Either[MongoError, Unit] =  save(mc.convert(value))
 
-    def update[T](query:MongoObject, upate:MongoObject, upsert:Boolean):Either[MongoError, Unit] = {
+    def update(query:MongoObject, upate:MongoObject, upsert:Boolean):Either[MongoError, Unit] = {
       import spendii.mongo.MongoTypes.MongoWriteResult._
       wrapWith {
         dbc.update(query.toDBObject, upate.toDBObject, upsert, false)
       } match {
         case Right(result) => result.getMongoError match { case None => Right();  case Some(me) => Left(me) }
         case Left(me) => Left(me)
+      }
+    }
+
+    def findAndModify[T](query:MongoObject, sort:MongoObject, update:MongoObject, returnNew:Boolean)(implicit mc:MongoConverter[T]) :
+      Either[MongoError, T] = {
+      import MongoObject.empty
+      wrapWith {
+        mc.convert(dbc.findAndModify(query, empty, sort, false, update, returnNew, false))
       }
     }
 

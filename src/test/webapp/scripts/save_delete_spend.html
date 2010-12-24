@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                    "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <script type="text/javascript" src="../../../main/webapp/scripts/jquery-1.4.2.min.js"></script>
+  <script type="text/javascript" src="../../../main/webapp/scripts/spendii.js"></script>
+  <link rel="stylesheet" href="qunit.css" type="text/css" media="screen" />
+  <script type="text/javascript" src="qunit.js"></script>
+
+  <script>
+  $(document).ready(function(){
+      test("show_deletion_error", function() {
+          jQuery.fx.off = true; //turn of effects so we can test the logic more easily.
+          equals($('#load_form_error_container').is(':visible'), true, "error container should be visible");
+          equals($('#load_form_error').is(':visible'), true, "error container should be visible");
+          equals($('#load_form_error').text(), "some message", "error container should have set message");
+          equals($('#load_form_error').text(), "some message", "error container should have set message");
+          equals($('#source_table tbody tr').length, 3, "table should have 3 rows");
+
+          delete_spend(45.56, "sp2");
+
+          equals($('#load_form_error_container').is(':hidden'), true, "error container should be hidden");
+          equals($('#load_form_error').is(':hidden'), true, "error container should be hidden");
+
+          equals($('#source_table tbody tr').length, 2, "table should have 2 rows");
+          equals($('#sp1 td:first').text(), "1", "first row should have an index of 1");
+          equals($('#sp3 td:first').text(), "2", "second row should have an index of 2");
+          equals($('span.total').text(), "$45.56", "span should have set value");
+      });
+  });
+
+  QUnit.done = function() {
+    $('#load_form_error_container').hide();//hide artifacts as they affects test suite output.
+    $('#source_table').hide();
+    $('span.total').hide();
+  };
+
+  </script>
+
+</head>
+<body>
+  <h1 id="qunit-header">Spendii Save Show Deletion Error Tests</h1>
+ <h2 id="qunit-banner"></h2>
+ <div id="qunit-testrunner-toolbar"></div>
+ <h2 id="qunit-userAgent"></h2>
+ <ol id="qunit-tests"></ol>
+ <div id="qunit-fixture">test markup, will be hidden</div>
+
+<div id="load_form_error_container">
+    <div id="load_form_error">some message</div>
+</div>
+
+<span class="total"></span>
+<table id="source_table">
+    <thead>
+        <th>col1</th>
+        <th>col2</th>
+        <th>col3</th>
+        <th>col4</th>
+    </thead>
+    <tbody>
+        <tr id="sp1">
+            <td>1</td>
+            <td>aaa</td>
+            <td>bbb</td>
+            <td>ccc</td>
+        </tr>
+        <tr id="sp2">
+            <td>2</td>
+            <td>eee</td>
+            <td>ffff</td>
+            <td>ggg</td>
+        </tr>
+        <tr id="sp3">
+            <td>3</td>
+            <td>hhh</td>
+            <td>iii</td>
+            <td>jjj</td>
+        </tr>
+
+    </tbody>
+</table>
+
+</body>
+</html>

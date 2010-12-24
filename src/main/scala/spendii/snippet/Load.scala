@@ -56,20 +56,13 @@ class Load extends Loggable with Rounding {
   def editSpend(sp:Spend, count:Int): JsCmd = JE.Call("update_form_for_edit", Str(sp.description), Str(sp.cost.toString), Str(sp.label))
 
   def deleteSpend(sp:Spend, count:Int): JsCmd = {
-    //TODO: Refactor this.
-    getDailySpend(user).update("date" -> currentDateAsTime, pull("spends", sp), false) match {
-      case Left(ex) => callErrorFunc(ex.message)
-      case Right(_) => {
-        getDailySpend(user).findOne[DailySpend]("date" -> currentDateAsTime) match {
-          case Left(me) =>  callErrorFunc(me.message)
-          case Right(Some(ds)) => calSuccessFunc(roundUp(ds.total, scale), "sp" + count)
-          case Right(None) => callErrorFunc("Could not find expenditure for " + currentDateAsString + ". Aborting deletion.")
-        }
-      }
+    getDailySpend(user).findAndModify[DailySpend]("date" -> currentDateAsTime, empty, pull("spends", sp), true) match {
+      case Left(me) => callErrorFunc(me.message)
+      case Right(ds) => calSuccessFunc(roundUp(ds.total, scale), "sp" + count)
     }
   }
 
-  def callErrorFunc(message:String): JsCmd =  JE.Call("show_ajax_error", Str(load_form_error), Str(message))
+  def callErrorFunc(message:String): JsCmd =  JE.Call("show_deletion_error", Str(message))
 
   def calSuccessFunc(total:String, value:String): JsCmd = JE.Call("delete_spend", Str(total), Str(value))
 }
