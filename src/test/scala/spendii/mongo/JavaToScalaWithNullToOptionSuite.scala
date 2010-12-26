@@ -7,8 +7,9 @@ package spendii.mongo
 
 import org.scalatest.FunSuite
 import org.scalatest.matchers.ShouldMatchers
+import spendii.common.JavaToScala
 
-final class NullToOptionSuite extends FunSuite with ShouldMatchers with MongoWriteResultTrait {
+final class JavaToScalaWithNullToOptionSuite extends FunSuite with ShouldMatchers with JavaToScala {
 
   test("NullToOption should convert null to None") {
     nullToOption(null) should equal (None)

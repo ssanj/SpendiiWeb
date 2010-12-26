@@ -73,5 +73,7 @@ trait MongoObjectTrait {
     def empty = new MongoObject
 
     def query(tuples:Tuple2[String, Any]*) = new MongoObject(tuples.toSeq)
+
+    def mongoObject(tuples:Tuple2[String, Any]*) = new MongoObject(tuples.toSeq)
   }
 }

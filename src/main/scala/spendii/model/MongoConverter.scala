@@ -7,8 +7,9 @@ package spendii.model
 import com.mongodb.BasicDBObject
 import spendii.mongo.MongoTypes.{MongoObjectId, MongoObject}
 
+//TODO: Move this out of the model package.
 trait MongoConverter[T] {
-  def convert(dbo:MongoObject): T
+  def convert(mo:MongoObject): T
   def convert(t:T): MongoObject
 }
 
@@ -20,6 +21,10 @@ object AnyRefConverter {
 
   implicit object LongConverter extends AnyRefConverter[Long] {
     def convert(anyRef:AnyRef): Long = anyRef.toString.toLong
+  }
+
+  implicit object IntConverter extends AnyRefConverter[Int] {
+    def convert(anyRef:AnyRef): Int = anyRef.toString.toInt
   }
 
   implicit object DoubleConverter extends AnyRefConverter[Double] {

@@ -6,6 +6,7 @@ package spendii.mongo
 
 import MongoTypes._
 import com.mongodb.{WriteResult}
+import spendii.common._
 
 trait MongoWriteResultTrait extends WrapWithTrait {
 
@@ -22,7 +23,7 @@ trait MongoWriteResultTrait extends WrapWithTrait {
     }
   }
 
-  object MongoWriteResult {
+  object MongoWriteResult extends JavaToScala  {
     implicit def writeResultToMongoWriteResult(wr:WriteResult): MongoWriteResult =
       MongoWriteResult(new WriteResultTrait {
         def getError = nullToOption(wr.getError)
@@ -30,10 +31,5 @@ trait MongoWriteResultTrait extends WrapWithTrait {
           nullToOption(wr.getLastError).flatMap(x => nullToOption(x.getException)).flatMap(y => nullToOption(y.getStackTraceString))
         }
       })
-  }
-
-  def nullToOption[A](f: => A): Option[A] = {
-    val result = f
-    if (result == null) None else Some(result)
   }
 }

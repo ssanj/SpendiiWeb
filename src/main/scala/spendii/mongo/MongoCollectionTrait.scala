@@ -7,16 +7,15 @@ package spendii.mongo
 import spendii.model.MongoConverter
 import com.mongodb.{DBCollection}
 import spendii.mongo.MongoTypes._
+import scala.{Either}
 
 trait MongoCollectionTrait {
 
-  case class MongoCollection(dbc:DBCollection) {
+  //TODO:Once all methods ar tested remove dbc and replace with newdbc.
+  case class MongoCollection(dbc:DBCollection, newdbc:DBCollectionTrait) {
 
     def findOne[T](mo:MongoObject)(implicit con:MongoConverter[T]): Either[MongoError, Option[T]] = {
-      wrapWith{
-        val find = dbc.findOne(mo.toDBObject)
-        if (find == null) None else  Some(con.convert(find))
-      }
+      wrapWith{ newdbc.findOne(mo.toDBObject).map(con.convert(_)) }
     }
 
     def find[T](mo:MongoObject)(implicit con:MongoConverter[T]): Either[MongoError, Seq[T]] = {
@@ -58,7 +57,8 @@ trait MongoCollectionTrait {
   }
 
   object MongoCollection {
-    implicit def dbCollectionToMongoCollection(dbc:DBCollection): MongoCollection = MongoCollection(dbc)
+    import DBCollectionTrait._
+    implicit def dbCollectionToMongoCollection(dbc:DBCollection): MongoCollection = MongoCollection(dbc, createDBCollectionTrait(dbc))
   }
 
 }
