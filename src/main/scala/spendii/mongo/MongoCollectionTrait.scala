@@ -19,7 +19,7 @@ trait MongoCollectionTrait {
 
     def find[T](mo:MongoObject)(implicit con:MongoConverter[T]): Either[MongoError, Seq[T]] = {
       wrapWith{
-        val mc:MongoCursor = dbc.find(mo.toDBObject)
+        val mc:MongoCursor = newdbc.find(mo.toDBObject)
         mc.toSeq[T]
       }
     }
