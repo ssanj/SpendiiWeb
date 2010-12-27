@@ -4,17 +4,24 @@
  */
 package spendii.mongo
 
-import com.mongodb.{DBObject, DBCollection}
+import com.mongodb.{DBObject, DBCollection, DBCursor}
 import spendii.common.JavaToScala
 
 trait DBCollectionTrait {
 
-  def findOne(mo:DBObject): Option[DBObject]
+  import com.mongodb.DBCursor
+
+  def findOne(dbo:DBObject): Option[DBObject]
+
+  def find(dbo:DBObject): DBCursor
 }
 
 object DBCollectionTrait extends JavaToScala {
 
   implicit def createDBCollectionTrait(dbc:DBCollection): DBCollectionTrait = new DBCollectionTrait {
+
       def findOne(dbo:DBObject): Option[DBObject] = nullToOption(dbc.findOne(dbo))
+
+      def find(dbo:DBObject): DBCursor = dbc.find(dbo)
     }
 }

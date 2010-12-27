@@ -9,7 +9,7 @@ import org.scalatest.matchers.ShouldMatchers
 import com.mongodb.DBObject
 import MongoTypes.MongoObject._
 
-final class MongoCollectionSuite extends FunSuite with ShouldMatchers with MongoCollectionTrait with MongoDummies {
+final class MongoCollectionForFindOneSuite extends FunSuite with ShouldMatchers with MongoCollectionTrait with MongoDummies {
 
   test("A MongoCollection should findOne existing object") {
     MongoCollection(null, ObjectFoundDBCollection).findOne[Person](empty) should equal (Right(Some(Person("sanj", 36))))
@@ -26,15 +26,21 @@ final class MongoCollectionSuite extends FunSuite with ShouldMatchers with Mongo
     }
   }
 
-  object ObjectFoundDBCollection extends DBCollectionTrait {
+  trait FindOneDBCollectionTrait extends DBCollectionTrait {
+
+    import com.mongodb.DBCursor
+    def find(dbo:DBObject): DBCursor = throw new IllegalStateException("find should not be tested in this context")
+  }
+
+  object ObjectFoundDBCollection extends FindOneDBCollectionTrait {
     def findOne(q:DBObject): Option[DBObject] = Some(mongoObject("name" -> "sanj", "age" -> 36).toDBObject)
   }
 
-  object ObjectNotFoundDBCollection extends DBCollectionTrait {
+  object ObjectNotFoundDBCollection extends FindOneDBCollectionTrait {
     def findOne(q:DBObject): Option[DBObject] = None
   }
 
-  object ObjectThrowsExceptionDBCollection extends DBCollectionTrait {
+  object ObjectThrowsExceptionDBCollection extends FindOneDBCollectionTrait {
     def findOne(q:DBObject): Option[DBObject] = throw new RuntimeException("throwing an Exy")
   }
 }
