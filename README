@@ -1,0 +1,6 @@
+SpendiiWeb
+----------
+
+A simple web application to manage personal finance. This project is more a proof-of-concept/learn-you-some-scala-and-lift as opposed to a fully-fleged application.
+
+It contains a rudimentary MongoDriver for scala as well as a simple validation framework.
