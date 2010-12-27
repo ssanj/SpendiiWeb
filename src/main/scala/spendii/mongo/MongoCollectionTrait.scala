@@ -4,7 +4,6 @@
  */
 package spendii.mongo
 
-import spendii.model.MongoConverter
 import com.mongodb.{DBCollection}
 import spendii.mongo.MongoTypes._
 import scala.{Either}

@@ -6,7 +6,6 @@ package spendii.mongo
 
 import collection.mutable.ListBuffer
 import com.mongodb.{BasicDBList, BasicDBObject, DBObject}
-import spendii.model.{MongoConverter, AnyRefConverter}
 import org.bson.types.ObjectId
 import spendii.mongo.MongoTypes.MongoObjectId
 

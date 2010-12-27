@@ -7,10 +7,7 @@ package spendii.mongo
 import org.scalatest.FunSuite
 import org.scalatest.matchers.ShouldMatchers
 import com.mongodb.DBObject
-import spendii.model.MongoConverter
 import MongoTypes.MongoObject._
-import MongoTypes.MongoObject
-import spendii.model.AnyRefConverter._
 
 final class MongoCollectionSuite extends FunSuite with ShouldMatchers with MongoCollectionTrait with MongoDummies {
 

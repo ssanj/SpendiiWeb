@@ -4,15 +4,30 @@
  */
 package spendii.model
 
-import collection.mutable.ListBuffer
+import scala.collection.mutable.ListBuffer
 import spendii.mongo.MongoTypes.{MongoObject, MongoObjectId}
-import MongoConverter._
 import spendii.common.Rounding
+import spendii.mongo.MongoConverter
 
 case class Spend private (val description:String, val cost:Double, val label:String)
 
 object Spend extends Rounding {
   implicit def spendToMongo(sp:Spend): MongoObject = SpendConverter.convert(sp)
+
+  implicit object SpendConverter extends MongoConverter[Spend] {
+
+    def convert(mgo:MongoObject): Spend = {
+       createSpend(mgo.get[String]("description"), mgo.get[Double]("cost"), mgo.get[String]("label"))
+     }
+
+    def convert(sp:Spend): MongoObject = {
+      val mo = new MongoObject()
+      mo.put("label", sp.label)
+      mo.put("cost", sp.cost)
+      mo.put("description", sp.description)
+      mo
+    }
+  }
 
   import bootstrap.liftweb.BootConfig._
   def createSpend(description:String, cost:Double, label:String): Spend =  Spend(description, roundUp(cost, scale), label)
@@ -32,6 +47,24 @@ case class DailySpend(val id:Option[MongoObjectId], val date:Long, val spends:Se
 }
 
 object DailySpend {
+
+  import Spend.SpendConverter
+  implicit object DailySpendConverter extends MongoConverter[DailySpend] {
+    def convert(mgo:MongoObject): DailySpend = {
+       val id = mgo.getId
+       val date = mgo.get[Long]("date")
+       DailySpend(Some(id), date, mgo.getArray[Spend]("spends")(SpendConverter))
+     }
+
+    def convert(ds:DailySpend): MongoObject = {
+      val mo = new MongoObject()
+      ds.id.foreach(mo.putId)
+      mo.put("date", ds.date)
+      mo.putArray("spends", ds.spends.map(SpendConverter.convert(_)))
+      mo
+    }
+  }
+
   implicit def dsToMongo(ds:DailySpend): MongoObject = DailySpendConverter.convert(ds)
 }
 

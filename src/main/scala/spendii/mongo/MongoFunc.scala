@@ -5,7 +5,6 @@
 package spendii.mongo
 
 import com.mongodb._
-import spendii.model.{MongoConverter}
 import MongoTypes._
 
 trait MongoFunc {

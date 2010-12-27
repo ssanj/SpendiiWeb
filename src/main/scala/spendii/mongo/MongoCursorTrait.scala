@@ -5,7 +5,6 @@
 package spendii.mongo
 
 import com.mongodb.{DBObject, DBCursor}
-import spendii.model.MongoConverter
 
 trait MongoCursorTrait {
 

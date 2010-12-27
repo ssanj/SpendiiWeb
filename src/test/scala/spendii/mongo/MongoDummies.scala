@@ -5,8 +5,8 @@
 
 package spendii.mongo
 
-import spendii.model.MongoConverter
 import spendii.mongo.MongoTypes._
+
 
 trait MongoDummies {
   case class Person(name:String, age:Int)
