@@ -1,6 +1,8 @@
+import _root_.ssahayam.JSTestRunnerPlugin
 import sbt._
 
-class Project(info: ProjectInfo) extends DefaultWebProject(info) {
+
+class Project(info: ProjectInfo) extends DefaultWebProject(info) with JSTestRunnerPlugin {
 
   lazy val artifactory = "Artifactory Release" at "http://hyperion:9080/artifactory/libs-releases"
   lazy val liftVersion = "2.2-M1"
@@ -18,6 +20,10 @@ class Project(info: ProjectInfo) extends DefaultWebProject(info) {
     ) ++ super.libraryDependencies
 
   override def compileOptions = CompileOption("-encoding") :: CompileOption("UTF-8") :: CompileOption("-unchecked") :: super.compileOptions.toList
+
+  override def quitOnExit = true
+
+  override def driverSeq:Seq[NamedDriver] = Seq(chromeDriver)
 }
 
 
