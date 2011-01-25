@@ -7,5 +7,5 @@ package plugins
 import sbt._
 
 class Plugins(info:ProjectInfo) extends PluginDefinition(info) {
-  val jsTester = "ssahayam" % "jstestrunner" % "1.0.6.14"
+  val shortbread = "shob" % "shortbread" % "0.0.10"
 }
